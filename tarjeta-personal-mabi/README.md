@@ -1,0 +1,35 @@
+# Tarjeta personal — MABI · Miguel Angel Biondi
+
+6 opciones. Cada una tiene un **frente** (logo grande sobre un fondo abstracto inspirado en la tarjeta de Bagno) y un **dorso** (datos, QR y logo, armado como en Bagno).
+
+- Medida: **90 × 50 mm** al corte, con **3 mm de sangrado** por lado (el archivo mide 96 × 56 mm).
+- Colores (los de las piezas de MABI): verde `#063A27`, verde logo `#123F2B`, dorado `#EFA013` y crema `#F5F6F0`.
+- Tipografías: **Sora** (nombre) e **Inter** (datos). Las dos son las de mabi.com.ar y están en `fuentes/`. Hay que instalarlas antes de abrir los SVG.
+- El QR es vectorial y lleva a https://mabi.com.ar/. Tiene corrección de errores H, con el isotipo en el centro, y se verificó que se puede leer.
+
+## Archivos por opción (`opciones/NN-nombre/`)
+
+| Archivo | Para qué |
+|---|---|
+| `frente.svg` / `dorso.svg` | **Para trabajar en Illustrator.** El texto es editable y los grupos tienen nombre (Fondo, Fondo-facetas, Logo, QR, Datos). La capa `Guias-NO-IMPRIMIR` marca el corte y la zona segura: hay que borrarla u ocultarla antes de imprimir. |
+| `MABI-tarjeta-NN-….pdf` | PDF de imprenta de 2 páginas (frente y dorso) con sangrado, TrimBox y BleedBox. También se abre en Illustrator. |
+| `preview-*.png` | Vista previa al corte. |
+
+`opciones/MABI-tarjetas-presentacion.png` / `.pdf` es una lámina con todas las opciones para mostrarle al cliente.
+
+## Opciones
+
+1. **Bosque**: fondo verde profundo con un abanico de planos como el de Bagno. El logo va en crema y dorado.
+2. **Dorado**: es la versión más parecida a Bagno. El lima pasa a dorado y los planos azules pasan a verde. El logo va en verde.
+3. **Bosque + Oro**: haces dorados que cruzan el verde. El dorso es crema y lleva una franja abstracta.
+4. **Crema**: fondo claro con prismas verdes y dorados. El dorso está invertido (verde oscuro).
+5. **Verde vivo**: el abanico está espejado y tiene una esquina dorada. El dorso lleva una franja.
+6. **Manuscrito**: usa el logo web "mabi" (manuscrito) en el frente sobre un abanico verde y dorado.
+
+## Antes de imprenta
+- Pasar los textos a contornos en Illustrator (Texto → Crear contornos) o mandar las fuentes.
+- Convertir a CMYK según el perfil de la imprenta. Los archivos están en RGB (los colores de marca).
+- Los logos se sacaron en vectores de `fuente/Mabi-Perfil.ai` y `fuente/Mabi-Logo-Web.ai`.
+
+## Regenerar
+`python3 generar.py` (requiere cairosvg, segno, skia-pathops, fonttools, pypdf y pillow, además de `pdftocairo`).

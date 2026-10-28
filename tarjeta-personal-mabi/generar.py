@@ -455,6 +455,186 @@ OPCIONES = [
 ]
 
 
+# ================================================================ serie 2 — conceptos nuevos
+import math
+
+WM_BBOX = (155.7, 505.0, 925.2, 787.3)   # MABI + leyenda, sin isotipo
+
+
+def g_wordmark(x, y, w, c_mabi, c_dist, c_int, layer="Logo-wordmark"):
+    x0, y0, x1, y1 = WM_BBOX
+    k = w / (x1 - x0)
+    out = [f'<g id="{layer}" transform="translate({x:.3f} {y:.3f}) '
+           f'scale({k:.6f}) translate({-x0} {-y0})">']
+    for name, col in (("mabi", c_mabi), ("distribucion", c_dist), ("inteligente", c_int)):
+        out.append(f'<g id="{layer}-{name}" fill="{col}">')
+        out += [f'<path d="{d}"/>' for d in LOGO[name]]
+        out.append("</g>")
+    out.append("</g>")
+    return "\n".join(out)
+
+
+def wordmark_h(w):
+    x0, y0, x1, y1 = WM_BBOX
+    return w * (y1 - y0) / (x1 - x0)
+
+
+def iso_h(w):
+    x0, y0, x1, y1 = ISO_BBOX
+    return w * (y1 - y0) / (x1 - x0)
+
+
+def _txt(x, y, s, size, fill, family="Inter", weight=500, ls=0.0, anchor="start"):
+    return (f'<text x="{x:.3f}" y="{y:.3f}" font-family="{family}" font-weight="{weight}" '
+            f'font-size="{size}" fill="{fill}" letter-spacing="{ls}" '
+            f'text-anchor="{anchor}">{s}</text>')
+
+
+def _qr_panel(x, y, size, color, panel, pad=1.6, layer="QR"):
+    """QR con zona de silencio clara (sirve sobre fondos oscuros)."""
+    qr, _ = g_qr(x, y, size, color, panel, layer=layer)
+    bg = (f'<rect x="{x-pad:.3f}" y="{y-pad:.3f}" width="{size+2*pad:.3f}" '
+          f'height="{size+2*pad:.3f}" rx="1.6" fill="{panel}"/>')
+    return bg + qr
+
+
+def _contactos_label(x, y, dy, c_lab, c_val, size=2.35):
+    """Contactos estilo editorial: etiqueta en versalitas + valor."""
+    out = []
+    for i, (lab, val) in enumerate((("TEL", TEL), ("MAIL", MAIL), ("WEB", WEB))):
+        yy = y + i * dy
+        out.append(_txt(x, yy, lab, 1.55, c_lab, weight=600, ls=0.32))
+        out.append(_txt(x + 8.2, yy, val, size, c_val, weight=500))
+    return out
+
+
+# ---------- 07 · Monograma: isotipo gigante recortado + grilla suiza
+def frente_07(op):
+    body = [f'<g id="Fondo"><rect width="{FW}" height="{FH}" fill="{CREMA}"/></g>']
+    iw = 112.0
+    body.append(f'<g id="Isotipo-gigante">{_isotipo(36.0, -15.0, iw, ORO)}</g>')
+    ww = 40.0
+    body.append(g_wordmark(B + 6.0, FH - B - 6.0 - wordmark_h(ww), ww, VERDE, VERDE, VERDE))
+    return [], body
+
+
+def dorso_07(op):
+    body = [f'<g id="Fondo"><rect width="{FW}" height="{FH}" fill="{VERDE}"/></g>']
+    x = B + 6.0
+    body.append(f'<g id="Isotipo">{_isotipo(FW - B - 6.0 - 9.0, B + 5.0, 9.0, ORO)}</g>')
+    body.append('<g id="Datos">')
+    body.append(_txt(x, B + 7.2, "MABI · DISTRIBUCIÓN INTELIGENTE", 1.55, ORO, weight=600, ls=0.32))
+    first, last = NOMBRE.rsplit(" ", 1)
+    body.append(_txt(x, B + 15.2, first, 5.2, CREMA, family="Sora", weight=800, ls=-0.12))
+    body.append(_txt(x, B + 21.4, last, 5.2, ORO, family="Sora", weight=800, ls=-0.12))
+    body.append(f'<rect x="{x}" y="{B+28.6}" width="44" height="0.18" fill="{CREMA}" opacity="0.35"/>')
+    body += _contactos_label(x, B + 34.2, 4.4, ORO, CREMA)
+    body.append("</g>")
+    qs = 15.0
+    body.append(_qr_panel(FW - B - 6.0 - qs, FH - B - 6.0 - qs, qs, VERDE, CREMA))
+    return [], body
+
+
+# ---------- 08 · Surcos: líneas topográficas (campo / viento del isotipo)
+def _topo(cx, cy, n, r0, dr, color, w, op0, op1, seed=0.0, sx=1.6):
+    out = []
+    for i in range(n):
+        r = r0 + i * dr
+        pts = []
+        for j in range(181):
+            t = 2 * math.pi * j / 180
+            k = (1 + 0.07 * math.sin(3 * t + seed + i * 0.17)
+                 + 0.045 * math.sin(5 * t - seed * 1.3 + i * 0.09)
+                 + 0.025 * math.cos(7 * t + i * 0.05))
+            pts.append((cx + sx * r * k * math.cos(t), cy + r * k * math.sin(t)))
+        d = "M" + " L".join(f"{px:.2f} {py:.2f}" for px, py in pts) + "Z"
+        a = op0 + (op1 - op0) * i / max(1, n - 1)
+        out.append(f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{w}" '
+                   f'stroke-opacity="{a:.3f}"/>')
+    return out
+
+
+def frente_08(op):
+    defs = [_grad("o8-base", 0, 0, FW, FH, [(0, "#0A4A32", 1), (1, "#03281A", 1)])]
+    body = ['<g id="Fondo">', f'<rect width="{FW}" height="{FH}" fill="url(#o8-base)"/>',
+            '<g id="Lineas-topograficas">']
+    body += _topo(FW - 4, FH + 2, 26, 3.0, 2.15, ORO, 0.22, 0.95, 0.12, seed=0.6)
+    body += ["</g>", "</g>"]
+    lw = 44.0
+    body.append(g_logo_mabi(B + 7.0, (FH - logo_mabi_h(lw)) / 2, lw, ORO, CREMA, CREMA, ORO)[0])
+    return defs, body
+
+
+def dorso_08(op):
+    body = ['<g id="Fondo">', f'<rect width="{FW}" height="{FH}" fill="{CREMA}"/>',
+            '<g id="Lineas-topograficas">']
+    body += _topo(-6, -4, 22, 3.0, 2.15, VERDE, 0.16, 0.55, 0.06, seed=2.1)
+    body += ["</g>", "</g>"]
+    x = B + 40.0
+    body.append('<g id="Datos">')
+    body.append(_txt(x, B + 11.5, NOMBRE, 3.9, VERDE, family="Sora", weight=700, ls=-0.06))
+    body.append(_txt(x, B + 16.0, "MABI · DISTRIBUCIÓN INTELIGENTE", 1.55, ORO, weight=700, ls=0.3))
+    rows = [("tel", TEL), ("mail", MAIL), ("web", WEB)]
+    for i, (k, v) in enumerate(rows):
+        cy = B + 26.0 + i * 5.6
+        body.append(g_icono(k, x + 1.7, cy, 1.7, ORO, VERDE))
+        body.append(_txt(x + 5.6, cy + 0.85, v, 2.45, "#1E1E1E"))
+    body.append("</g>")
+    qs = 17.0
+    body.append(_qr_panel(B + 8.0, B + 19.0, qs, VERDE, BLANCO, pad=1.4))
+    body.append(g_wordmark(B + 7.0, B + 6.5, 19.5, VERDE, VERDE, ORO))
+    return [], body
+
+
+# ---------- 09 · Sol: arco dorado gigante + bloques de color
+def frente_09(op):
+    cx, cy = FW - 10.0, FH + 6.0
+    body = ['<g id="Fondo">', f'<rect width="{FW}" height="{FH}" fill="{VERDE}"/>',
+            '<g id="Sol">']
+    for i, (r, a) in enumerate(((60, 0.10), (52, 0.18), (44, 0.30))):
+        body.append(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{ORO}" '
+                     f'stroke-width="0.35" stroke-opacity="{a}"/>')
+    defs = [_grad("o9-sol", cx - 30, cy - 36, cx + 10, cy, [(0, ORO_C, 1), (1, ORO, 1)])]
+    body.append(f'<circle cx="{cx}" cy="{cy}" r="34" fill="url(#o9-sol)"/>')
+    body.append(f'<g id="Isotipo-en-sol">{_isotipo(cx - 21.0, cy - 28.0, 26.0, VERDE)}</g>')
+    body += ["</g>", "</g>"]
+    ww = 46.0
+    body.append(g_wordmark(B + 6.0, (FH - wordmark_h(ww)) / 2 - 2.0, ww, CREMA, CREMA, ORO))
+    return defs, body
+
+
+def dorso_09(op):
+    px = 61.0
+    body = ['<g id="Fondo">', f'<rect width="{FW}" height="{FH}" fill="{CREMA}"/>',
+            f'<path id="Panel" fill="{VERDE}" d="M{px+6} 0H{FW}V{FH}H{px+6}'
+            f'A6 6 0 0 1 {px} {FH-6}V6A6 6 0 0 1 {px+6} 0Z"/>', "</g>"]
+    qs = 16.0
+    qx = px + (FW - B - px - qs) / 2 + 1.0
+    body.append(_qr_panel(qx, B + 10.5, qs, VERDE, CREMA))
+    body.append(_txt(qx + qs / 2, B + 33.0, "ESCANEÁ", 1.5, ORO, weight=700, ls=0.35, anchor="middle"))
+    x = B + 6.0
+    body.append('<g id="Datos">')
+    body.append(f'<g id="Isotipo">{_isotipo(x, B + 5.5, 10.0, ORO)}</g>')
+    body.append(_txt(x, B + 17.8, NOMBRE, 3.9, VERDE, family="Sora", weight=800, ls=-0.08))
+    body.append(_txt(x, B + 22.0, "MABI · Distribución Inteligente", 2.0, "#5A6A62", weight=500))
+    for i, v in enumerate((TEL, MAIL, WEB)):
+        yy = B + 31.0 + i * 4.8
+        body.append(f'<circle cx="{x+0.7}" cy="{yy-0.8:.3f}" r="0.7" fill="{ORO}"/>')
+        body.append(_txt(x + 3.0, yy, v, 2.45, "#1E1E1E"))
+    body.append("</g>")
+    return [], body
+
+
+OPCIONES += [
+    {"n": 7, "slug": "07-monograma", "serie": 2, "ff": frente_07, "fd": dorso_07,
+     "nombre": "Monograma — isotipo gigante recortado + grilla editorial"},
+    {"n": 8, "slug": "08-surcos", "serie": 2, "ff": frente_08, "fd": dorso_08,
+     "nombre": "Surcos — líneas topográficas doradas sobre verde"},
+    {"n": 9, "slug": "09-sol", "serie": 2, "ff": frente_09, "fd": dorso_09,
+     "nombre": "Sol — arco dorado gigante y bloques de color"},
+]
+
+
 def render_pdf(svg, path):
     cairosvg.svg2pdf(bytestring=svg.encode(), write_to=path)
 
@@ -466,7 +646,7 @@ def main():
         d = os.path.join(OUT, op["slug"])
         os.makedirs(d, exist_ok=True)
         caras = {}
-        for cara, fn in (("frente", frente), ("dorso", dorso)):
+        for cara, fn in (("frente", op.get("ff", frente)), ("dorso", op.get("fd", dorso))):
             defs, body = fn(op)
             title = f"MABI tarjeta {op['slug']} {cara}"
             limpio = svg_doc(defs, body, title)
@@ -494,22 +674,24 @@ def main():
         w.add_metadata({"/Title": f"MABI tarjeta personal {op['slug']}"})
         w.write(os.path.join(d, f"MABI-tarjeta-{op['slug']}.pdf"))
         print("ok", op["slug"])
-    hoja_presentacion()
+    hoja_presentacion(1, "MABI-tarjetas-presentacion")
+    hoja_presentacion(2, "MABI-tarjetas-presentacion-2")
 
 
-def hoja_presentacion():
+def hoja_presentacion(serie, nombre):
     """Lámina con todas las opciones (frente | dorso) para mostrar al cliente."""
     S = 8  # px por mm en la lámina
     cw, ch = int(W * S), int(H * S)
     pad, gap, head = 60, 36, 70
     cols_w = pad * 2 + cw * 2 + gap
-    rows_h = pad + len(OPCIONES) * (ch + head + gap)
+    ops = [o for o in OPCIONES if o.get("serie", 1) == serie]
+    rows_h = pad + len(ops) * (ch + head + gap)
     sheet = Image.new("RGB", (cols_w, rows_h), (236, 236, 232))
     from PIL import ImageDraw, ImageFont
     dr = ImageDraw.Draw(sheet)
     f = ImageFont.truetype(os.path.join(HERE, "fuentes", "Sora-700.ttf"), 30)
     y = pad
-    for op in OPCIONES:
+    for op in ops:
         dr.text((pad, y), f"Opción {op['n']} · {op['nombre']}", font=f, fill=(6, 58, 39))
         y += head
         for i, cara in enumerate(("frente", "dorso")):
@@ -520,8 +702,8 @@ def hoja_presentacion():
             sheet.paste(sh, (x + 6, y + 8))
             sheet.paste(im, (x, y))
         y += ch + gap
-    sheet.save(os.path.join(OUT, "MABI-tarjetas-presentacion.png"))
-    sheet.convert("RGB").save(os.path.join(OUT, "MABI-tarjetas-presentacion.pdf"), resolution=150)
+    sheet.save(os.path.join(OUT, f"{nombre}.png"))
+    sheet.convert("RGB").save(os.path.join(OUT, f"{nombre}.pdf"), resolution=150)
 
 
 if __name__ == "__main__":

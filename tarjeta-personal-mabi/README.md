@@ -1,6 +1,6 @@
 # Tarjeta personal — MABI · Miguel Angel Biondi
 
-6 opciones. Cada una tiene un **frente** (logo grande sobre un fondo abstracto inspirado en la tarjeta de Bagno) y un **dorso** (datos, QR y logo, armado como en Bagno).
+9 opciones en dos series. La serie 1 son las opciones 1 a 6. Cada una tiene un **frente** (logo grande sobre un fondo abstracto inspirado en la tarjeta de Bagno) y un **dorso** (datos, QR y logo, armado como en Bagno).
 
 - Medida: **90 × 50 mm** al corte, con **3 mm de sangrado** por lado (el archivo mide 96 × 56 mm).
 - Colores (los de las piezas de MABI): verde `#063A27`, verde logo `#123F2B`, dorado `#EFA013` y crema `#F5F6F0`.
@@ -15,7 +15,7 @@
 | `MABI-tarjeta-NN-….pdf` | PDF de imprenta de 2 páginas (frente y dorso) con sangrado, TrimBox y BleedBox. También se abre en Illustrator. |
 | `preview-*.png` | Vista previa al corte. |
 
-`opciones/MABI-tarjetas-presentacion.png` / `.pdf` es una lámina con todas las opciones para mostrarle al cliente.
+`opciones/MABI-tarjetas-presentacion.png` (serie 1) y `MABI-tarjetas-presentacion-2.png` (serie 2), cada una también en `.pdf`, son las láminas con todas las opciones para mostrarle al cliente.
 
 ## Opciones
 
@@ -25,6 +25,11 @@
 4. **Crema**: fondo claro con prismas verdes y dorados. El dorso está invertido (verde oscuro).
 5. **Verde vivo**: el abanico está espejado y tiene una esquina dorada. El dorso lleva una franja.
 6. **Manuscrito**: usa el logo web "mabi" (manuscrito) en el frente sobre un abanico verde y dorado.
+
+### Serie 2: conceptos distintos (lámina `MABI-tarjetas-presentacion-2`)
+7. **Monograma**: frente crema con el isotipo dorado gigante, recortado por el borde, y el logo en verde abajo a la izquierda. El dorso es verde, con una grilla editorial: el nombre grande en dos colores, etiquetas TEL/MAIL/WEB y el QR en un panel.
+8. **Surcos**: frente verde con líneas topográficas doradas que evocan el campo y el viento del isotipo, y el logo a la izquierda. El dorso es crema y repite las mismas líneas en verde suave.
+9. **Sol**: frente verde con un arco dorado gigante (un sol sobre el campo), anillos y el isotipo dentro. El dorso va en bloques: datos sobre crema y un panel verde redondeado con el QR y la palabra "ESCANEÁ".
 
 ## Antes de imprenta
 - Pasar los textos a contornos en Illustrator (Texto → Crear contornos) o mandar las fuentes.

@@ -635,6 +635,10 @@ OPCIONES += [
 ]
 
 
+# opciones que eligió el cliente (lámina de preselección)
+SELECCION = (1, 3, 5, 7, 8, 9)
+
+
 def render_pdf(svg, path):
     cairosvg.svg2pdf(bytestring=svg.encode(), write_to=path)
 
@@ -676,15 +680,19 @@ def main():
         print("ok", op["slug"])
     hoja_presentacion(1, "MABI-tarjetas-presentacion")
     hoja_presentacion(2, "MABI-tarjetas-presentacion-2")
+    hoja_presentacion(None, "MABI-tarjetas-seleccion", SELECCION)
 
 
-def hoja_presentacion(serie, nombre):
+def hoja_presentacion(serie, nombre, numeros=None):
     """Lámina con todas las opciones (frente | dorso) para mostrar al cliente."""
     S = 8  # px por mm en la lámina
     cw, ch = int(W * S), int(H * S)
     pad, gap, head = 60, 36, 70
     cols_w = pad * 2 + cw * 2 + gap
-    ops = [o for o in OPCIONES if o.get("serie", 1) == serie]
+    if numeros:
+        ops = [o for o in OPCIONES if o["n"] in numeros]
+    else:
+        ops = [o for o in OPCIONES if o.get("serie", 1) == serie]
     rows_h = pad + len(ops) * (ch + head + gap)
     sheet = Image.new("RGB", (cols_w, rows_h), (236, 236, 232))
     from PIL import ImageDraw, ImageFont

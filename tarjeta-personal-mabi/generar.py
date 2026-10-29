@@ -639,6 +639,54 @@ OPCIONES += [
 SELECCION = (1, 3, 5, 7, 8, 9)
 
 
+def _prefijar(defs, body, pre):
+    """Prefija ids y referencias para que no choquen al juntar tarjetas."""
+    txt = "\n".join(defs) + "\u0000" + "\n".join(body)
+    txt = re.sub(r'id="([^"]+)"', lambda m: f'id="{pre}-{m.group(1)}"', txt)
+    txt = re.sub(r'url\(#([^)]+)\)', lambda m: f'url(#{pre}-{m.group(1)})', txt)
+    return txt.split("\u0000")
+
+
+def svg_unico(numeros, path):
+    """Un solo SVG con todas las opciones elegidas (frente | dorso por fila).
+
+    Cada tarjeta es un grupo con sangrado incluido (96 x 56 mm); la capa
+    Guias-NO-IMPRIMIR marca el corte de 90 x 50 mm y la zona segura."""
+    gap, head, margen = 12.0, 10.0, 10.0
+    ops = [o for o in OPCIONES if o["n"] in numeros]
+    tw = margen * 2 + FW * 2 + gap
+    th = margen + len(ops) * (head + FH + gap) - gap + margen
+    defs, cards, titulos, gu = [], [], [], []
+    y = margen
+    for op in ops:
+        titulos.append(_txt(margen, y + 6.0, f"Opción {op['n']} · {op['nombre']}", 4.2,
+                            VERDE, family="Sora", weight=700))
+        y += head
+        for i, (cara, fn) in enumerate((("Frente", op.get("ff", frente)),
+                                        ("Dorso", op.get("fd", dorso)))):
+            x = margen + i * (FW + gap)
+            pre = f"Op{op['n']:02d}-{cara}"
+            d, b = _prefijar(*fn(op), pre)
+            defs.append(d)
+            defs.append(f'<clipPath id="{pre}-clip"><rect width="{FW}" height="{FH}"/></clipPath>')
+            cards.append(f'<g id="{pre}" transform="translate({x:.3f} {y:.3f})">'
+                         f'<g clip-path="url(#{pre}-clip)">{b}</g></g>')
+            gu.append(f'<rect x="{x+B:.3f}" y="{y+B:.3f}" width="{W}" height="{H}"/>'
+                      f'<rect x="{x+B+4:.3f}" y="{y+B+4:.3f}" width="{W-8}" height="{H-8}" '
+                      f'stroke-dasharray="0.6 0.6"/>')
+        y += FH + gap
+    svg = (f'<?xml version="1.0" encoding="UTF-8"?>\n'
+           f'<svg xmlns="http://www.w3.org/2000/svg" width="{tw}mm" height="{th}mm" '
+           f'viewBox="0 0 {tw} {th}">\n<title>MABI tarjetas seleccion</title>\n'
+           f'<defs>{"".join(defs)}</defs>\n'
+           f'<g id="Mesa"><rect width="{tw}" height="{th}" fill="#ECECE8"/></g>\n'
+           f'<g id="Tarjetas">{"".join(cards)}</g>\n'
+           f'<g id="Titulos">{"".join(titulos)}</g>\n'
+           f'<g id="Guias-NO-IMPRIMIR" fill="none" stroke="#FF00FF" stroke-width="0.1">'
+           f'{"".join(gu)}</g>\n</svg>\n')
+    open(path, "w").write(svg)
+
+
 def render_pdf(svg, path):
     cairosvg.svg2pdf(bytestring=svg.encode(), write_to=path)
 
@@ -681,6 +729,7 @@ def main():
     hoja_presentacion(1, "MABI-tarjetas-presentacion")
     hoja_presentacion(2, "MABI-tarjetas-presentacion-2")
     hoja_presentacion(None, "MABI-tarjetas-seleccion", SELECCION)
+    svg_unico(SELECCION, os.path.join(OUT, "MABI-tarjetas-seleccion.svg"))
 
 
 def hoja_presentacion(serie, nombre, numeros=None):

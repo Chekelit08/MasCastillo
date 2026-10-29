@@ -7,7 +7,8 @@ Cada opción tiene un frente y un dorso. Medida: **90 × 50 mm** al corte (la op
 - **Colores:** naranja `#F5921E`, línea del castillo `#CE7F1C`, negro de la web `#0B0B10`, píldoras `#16161D` y blanco.
 - **Tipografías:** Inter (datos) y Montserrat (frases). Están en `fuentes/`.
 - **QR:** es vectorial y lleva a **https://mascastillo.com/qr**. Tiene corrección de errores H y el "más" en el centro, y se verificó que se lee. ⚠️ La página `/qr` todavía no existe: hay que crearla (o armar una redirección) antes de imprimir.
-- **Datos:** WhatsApp 11 3768 2397 · hola@mascastillo.com · @mascastillo.ok · mascastillo.com
+- **Datos impresos:** WhatsApp 11 3768 2397 · hola@mascastillo.com · @mascastillo.ok. La web no va impresa porque está en el QR.
+- **Criterio:** el castillo es solo una textura (8–20 % de opacidad, tono sobre tono). La zona segura es de 6 mm y los contactos se alinean con la base del QR.
 
 ## Archivos
 - `opciones/MasCastillo-tarjetas-todas.svg`: **un solo SVG con las 10 opciones** (frente y dorso por fila). Cada tarjeta es un grupo de recorte con su sangrado, y la capa `Guias-NO-IMPRIMIR` marca el corte y la zona segura.
@@ -15,11 +16,11 @@ Cada opción tiene un frente y un dorso. Medida: **90 × 50 mm** al corte (la op
 - `opciones/MasCastillo-tarjetas-presentacion.png` / `.pdf`: la lámina para mostrar.
 
 ## Opciones
-1. **Castillo naranja:** la portada como fondo. El dorso es naranja.
-2. **Noche:** castillo naranja sobre negro. El dorso usa las píldoras de contacto de la web.
-3. **Horizonte:** el castillo cambia de color al cruzar al suelo negro. El dorso tiene un bloque naranja con el QR.
-4. **Torre:** zoom al dibujo y el logo en un chip negro. El dorso es editorial, con la frase "Profesionalizamos tu marca."
-5. **Minimal:** fondo blanco con el castillo naranja. El dorso es naranja.
+1. **Naranja:** logo al centro con el castillo como textura. El dorso es negro.
+2. **Noche:** negro con un brillo cálido. El dorso usa las píldoras de contacto de la web.
+3. **Horizonte:** base negra con el slogan. El dorso tiene un bloque naranja con el QR.
+4. **Torre:** textura de torres y el logo en un chip negro. El dorso es editorial, con la frase "Profesionalizamos tu marca."
+5. **Minimal:** blanca con una textura naranja. El dorso es naranja.
 6. **Web:** negro con brillo. El dorso está dividido en naranja y negro, con los íconos de cada red.
 7. **Portal:** el castillo se ve a través de un arco. El dorso es blanco con un QR grande.
 8. **Tipográfica:** "más castillo" gigante, tono sobre tono.

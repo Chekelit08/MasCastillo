@@ -29,8 +29,9 @@ MAIL = "hola@mascastillo.com"
 INSTAGRAM = "@mascastillo.ok"
 WEB = "mascastillo.com"
 URL_QR = "https://mascastillo.com/qr"
+# la web no va impresa: está en el QR
 CONTACTOS = [("wa", "WhatsApp", WHATSAPP), ("mail", "Email", MAIL),
-             ("ig", "Instagram", INSTAGRAM), ("web", "Web", WEB)]
+             ("ig", "Instagram", INSTAGRAM)]
 
 # ---------------------------------------------------------------- marca
 NARANJA = "#F5921E"     # naranja del logo / portada
@@ -264,246 +265,271 @@ def rect(fw, fh, color, gid="Fondo-color"):
     return f'<rect id="{gid}" x="0" y="0" width="{fw}" height="{fh}" fill="{color}"/>'
 
 
+# ================================================================ grilla
+# Zona segura de 6 mm desde el corte. El castillo es textura (8–20 %), nunca
+# protagonista. Dorsos: solo WhatsApp, Email e Instagram; la web va en el QR.
+M = 6.0               # margen de seguridad desde el corte
+QS = 19.0             # QR estándar (mm)
+QP = 1.4              # aire blanco alrededor del QR
+TX = 2.6              # cuerpo de los datos (≈ 7.4 pt)
+LINEA_CAST = "#C26F0E"  # línea del castillo sobre naranja (tono sobre tono)
+
+
+def caja(fw, fh):
+    """Bordes de la zona segura: izq, arriba, der, abajo."""
+    return B + M, B + M, fw - B - M, fh - B - M
+
+
+def textura(fw, fh, color, op, w=None, dy=0.0, gid="Castillo-textura"):
+    """El dibujo del castillo como textura, apoyado en el pie de la tarjeta."""
+    w = w or fw + 6
+    h = w * CAST_H / CAST_W
+    return g_castillo((fw - w) / 2, fh - h + 1.5 + dy, w, color, op, gid)
+
+
+def dorso_std(fw, fh, fondo, c_mas, c_cast, circ, glyph, val, qr_fondo=BLANCO, extra=()):
+    """Dorso base: logo arriba a la izquierda, 3 contactos abajo alineados
+    con la base del QR (abajo a la derecha)."""
+    x0, y0, x1, y1 = caja(fw, fh)
+    qx, qy = x1 - QP - QS, y1 - QP - QS
+    base = qy + QS                       # base del QR = base del último dato
+    dy, r = 6.3, 2.0
+    body = ['<g id="Fondo">', fondo, *extra, "</g>",
+            g_logo(x0, y0, 24, c_mas, c_cast, tag=False)]
+    body += filas(x0, base - 0.85 - 2 * dy, dy, r, circ, glyph, val, size=TX, weight=600)
+    body.append(g_qr(qx, qy, QS, NEGRO, qr_fondo))
+    return body
+
+
 # ================================================================ FRENTES
 def f01(fw, fh):
-    d, g = glow("g1", fw / 2, fh / 2, 34, 18, NARANJA, 0.95)
-    lw = 50.0
-    return [d], ['<g id="Fondo">', rect(fw, fh, NARANJA),
-                 g_castillo(-3, fh - 54.5, 102, NARANJA_O), g, "</g>",
-                 g_logo((fw - lw) / 2, (fh - logo_h(lw)) / 2, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
+    lw = 46.0
+    return [], ['<g id="Fondo">', rect(fw, fh, NARANJA), textura(fw, fh, LINEA_CAST, 0.35), "</g>",
+                g_logo((fw - lw) / 2, (fh - logo_h(lw)) / 2 - 1.5, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
 
 
 def f02(fw, fh):
-    d1, g1 = glow("g2a", fw / 2, fh + 6, 60, 30, NARANJA, 0.45)
-    lw = 50.0
-    return [d1], ['<g id="Fondo">', rect(fw, fh, NEGRO), g1,
-                  g_castillo(-3, fh - 54.5, 102, NARANJA, 0.22), "</g>",
-                  g_logo((fw - lw) / 2, (fh - logo_h(lw)) / 2, lw, NARANJA, BLANCO, BLANCO, NARANJA)]
+    d1, g1 = glow("g2a", fw / 2, fh + 8, 62, 26, NARANJA, 0.30)
+    lw = 46.0
+    return [d1], ['<g id="Fondo">', rect(fw, fh, NEGRO), g1, textura(fw, fh, NARANJA, 0.08), "</g>",
+                  g_logo((fw - lw) / 2, (fh - logo_h(lw)) / 2 - 1.5, lw, NARANJA, BLANCO, BLANCO, NARANJA)]
 
 
 def f03(fw, fh):
-    hor = 40.0
-    defs = [f'<clipPath id="c3a"><rect x="0" y="0" width="{fw}" height="{hor}"/></clipPath>',
-            f'<clipPath id="c3b"><rect x="0" y="{hor}" width="{fw}" height="{fh}"/></clipPath>']
-    cx, cy, cw = 36.0, 4.0, 80.0
-    lw = 36.0
+    x0, y0, x1, y1 = caja(fw, fh)
+    banda = fh - B - 12.0
+    defs = [f'<clipPath id="c3"><rect width="{fw}" height="{banda}"/></clipPath>']
+    lw = 40.0
+    lh = logo_h(lw, tag=False)
     return defs, ['<g id="Fondo">', rect(fw, fh, NARANJA),
-                  f'<rect id="Suelo" x="0" y="{hor}" width="{fw}" height="{fh-hor}" fill="{NEGRO}"/>',
-                  f'<g clip-path="url(#c3a)">{g_castillo(cx, cy, cw, NEGRO, 0.4, "Castillo-cielo")}</g>',
-                  f'<g clip-path="url(#c3b)">{g_castillo(cx, cy, cw, NARANJA, 0.9, "Castillo-suelo")}</g>',
+                  f'<g clip-path="url(#c3)">{textura(fw, fh, NEGRO, 0.10, dy=-10)}</g>',
+                  f'<rect id="Banda" x="0" y="{banda}" width="{fw}" height="{fh-banda}" fill="{NEGRO}"/>',
                   "</g>",
-                  g_logo(B + 5.5, B + 5.0, lw, BLANCO, NEGRO, NEGRO, NEGRO)]
+                  g_logo(x0, (banda - lh) / 2 + 1.0, lw, BLANCO, NEGRO, tag=False),
+                  T(x0, banda + (fh - B - banda) / 2 + 0.7, "PROFESIONALIZAMOS TU MARCA", 1.9,
+                    NARANJA, weight=700, family="Montserrat", ls=0.42)]
 
 
 def f04(fw, fh):
-    lw = 34.0
+    x0, y0, x1, y1 = caja(fw, fh)
+    lw = 32.0
     lh = logo_h(lw)
-    px, py, pw, ph = B + 4.0, fh - B - 4.0 - (lh + 7.0), lw + 8.0, lh + 7.0
+    pw, ph = lw + 9.0, lh + 8.0
     return [], ['<g id="Fondo">', rect(fw, fh, NARANJA),
-                g_castillo(-112, -38, 215, NEGRO, 0.8, "Castillo-zoom"), "</g>",
-                f'<rect id="Chip" x="{px}" y="{py}" width="{pw}" height="{ph}" rx="2.2" fill="{NEGRO}"/>',
-                g_logo(px + 4.0, py + 3.5, lw, NARANJA, BLANCO, BLANCO, NARANJA)]
+                g_castillo(-112, -38, 215, NEGRO, 0.11, "Castillo-zoom"), "</g>",
+                f'<rect id="Chip" x="{x0-2}" y="{y1+2-ph}" width="{pw}" height="{ph}" rx="2" fill="{NEGRO}"/>',
+                g_logo(x0 + 2.5, y1 + 2 - ph + 4.0, lw, NARANJA, BLANCO, BLANCO, NARANJA)]
 
 
 def f05(fw, fh):
-    lw = 40.0
-    return [], ['<g id="Fondo">', rect(fw, fh, BLANCO),
-                g_castillo((fw - 70) / 2, fh - 28.5, 70, NARANJA, 0.85), "</g>",
-                g_logo((fw - lw) / 2, B + 5.0, lw, NARANJA, NEGRO, NEGRO, NARANJA)]
+    lw = 44.0
+    return [], ['<g id="Fondo">', rect(fw, fh, BLANCO), textura(fw, fh, NARANJA, 0.13), "</g>",
+                g_logo((fw - lw) / 2, (fh - logo_h(lw)) / 2 - 3.0, lw, NARANJA, NEGRO, NEGRO, NARANJA)]
 
 
 def f06(fw, fh):
-    d1, g1 = glow("g6a", fw * 0.5, fh + 4, 52, 26, NARANJA, 0.55)
-    d2, g2 = glow("g6b", fw * 0.95, -4, 30, 18, "#8A3AB9", 0.35)
-    lw = 46.0
+    d1, g1 = glow("g6a", fw * 0.5, fh + 4, 52, 24, NARANJA, 0.45)
+    d2, g2 = glow("g6b", fw * 0.95, -4, 30, 18, "#8A3AB9", 0.28)
+    lw = 44.0
     lh = logo_h(lw, tag=False)
-    body = ['<g id="Fondo">', rect(fw, fh, NEGRO), g1, g2, "</g>",
-            g_logo((fw - lw) / 2, (fh - lh) / 2 - 3.5, lw, NARANJA, BLANCO, tag=False),
-            f'<rect x="{(fw-38)/2}" y="{fh/2+lh/2+0.8:.3f}" width="38" height="5.6" rx="2.8" '
-            f'fill="none" stroke="{BORDE}" stroke-width="0.2"/>',
-            T(fw / 2, fh / 2 + lh / 2 + 4.6, "PROFESIONALIZAMOS TU MARCA", 1.65, BLANCO,
-              weight=600, family="Montserrat", ls=0.32, anchor="middle")]
-    return [d1, d2], body
+    ty = fh / 2 + lh / 2 + 1.0
+    return [d1, d2], ['<g id="Fondo">', rect(fw, fh, NEGRO), g1, g2, "</g>",
+                      g_logo((fw - lw) / 2, (fh - lh) / 2 - 3.5, lw, NARANJA, BLANCO, tag=False),
+                      f'<rect id="Pildora" x="{(fw-40)/2}" y="{ty:.3f}" width="40" height="5.6" rx="2.8" '
+                      f'fill="none" stroke="{BORDE}" stroke-width="0.2"/>',
+                      T(fw / 2, ty + 3.6, "PROFESIONALIZAMOS TU MARCA", 1.65, BLANCO,
+                        weight=600, family="Montserrat", ls=0.32, anchor="middle")]
 
 
 def f07(fw, fh):
-    # portal de castillo (arco) con el dibujo adentro
-    ax, aw, top = 52.0, 36.0, 7.0
+    x0, y0, x1, y1 = caja(fw, fh)
+    aw, top = 30.0, 8.0
+    ax = x1 + 2.0 - aw
     r = aw / 2
     arco = f"M{ax} {fh+1}V{top+r}A{r} {r} 0 0 1 {ax+aw} {top+r}V{fh+1}Z"
     defs = [f'<clipPath id="c7"><path d="{arco}"/></clipPath>']
     lw = 38.0
     return defs, ['<g id="Fondo">', rect(fw, fh, NARANJA),
                   f'<path id="Portal" fill="{NEGRO}" d="{arco}"/>',
-                  f'<g clip-path="url(#c7)">{g_castillo(-14, 6, 140, NARANJA, 0.85)}</g>',
-                  f'<path fill="none" stroke="{BLANCO}" stroke-width="0.35" d="'
-                  f'M{ax-2.2} {fh+1}V{top+r}A{r+2.2} {r+2.2} 0 0 1 {ax+aw+2.2} {top+r}V{fh+1}"/>',
-                  "</g>",
-                  g_logo(B + 5.5, (fh - logo_h(lw)) / 2, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
+                  f'<g clip-path="url(#c7)">{g_castillo(-30, 8, 140, NARANJA, 0.22)}</g>', "</g>",
+                  g_logo(x0, (fh - logo_h(lw)) / 2, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
 
 
 def f08(fw, fh):
-    lw = 46.0
+    x0, y0, x1, y1 = caja(fw, fh)
+    lw = 44.0
     return [], ['<g id="Fondo">', rect(fw, fh, NARANJA),
-                g_palabra("castillo", -10, fh - palabra_h("castillo", 150) + 9, 150, NARANJA_O, 0.75,
+                g_palabra("castillo", -10, fh - palabra_h("castillo", 150) + 9, 150, LINEA_CAST, 0.35,
                           gid="Castillo-gigante"),
-                g_palabra("mas", 50, -10, 70, NARANJA_O, 0.5, gid="Mas-gigante"), "</g>",
-                g_logo(B + 6.0, (fh - logo_h(lw)) / 2, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
+                g_palabra("mas", 50, -10, 70, LINEA_CAST, 0.25, gid="Mas-gigante"), "</g>",
+                g_logo(x0, (fh - logo_h(lw)) / 2, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
 
 
 def f09(fw, fh):
-    lw = 44.0
+    lw = 42.0
     lh = logo_h(lw, tag=False)
-    return [], ['<g id="Fondo">', rect(fw, fh, NEGRO),
-                almenas(fh - 13.0, fw, 3.2, 4.6, NARANJA), "</g>",
-                g_logo((fw - lw) / 2, 9.5, lw, NARANJA, BLANCO, tag=False),
+    return [], ['<g id="Fondo">', rect(fw, fh, NEGRO), almenas(fh - 13.0, fw, 3.2, 4.6, NARANJA), "</g>",
+                g_logo((fw - lw) / 2, (fh - 16.2 - lh) / 2 + 0.5, lw, NARANJA, BLANCO, tag=False),
                 T(fw / 2, fh - 6.6, "PROFESIONALIZAMOS TU MARCA", 1.9, NEGRO, weight=700,
-                  family="Montserrat", ls=0.35, anchor="middle")]
+                  family="Montserrat", ls=0.38, anchor="middle")]
 
 
 def f10(fw, fh):  # vertical
-    lw = 38.0
+    lw = 36.0
     return [], ['<g id="Fondo">', rect(fw, fh, NARANJA),
-                g_castillo(-38, fh - 62, 125, NARANJA_O), "</g>",
-                g_logo((fw - lw) / 2, B + 10.0, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
+                g_castillo(-38, fh - 58, 125, LINEA_CAST, 0.35), "</g>",
+                g_logo((fw - lw) / 2, B + 16.0, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
 
 
 # ================================================================ DORSOS
 def d01(fw, fh):
-    qs = 18.0
-    body = ['<g id="Fondo">', rect(fw, fh, NARANJA), g_castillo(-3, fh - 54.5, 102, NARANJA_O, 0.35),
-            "</g>",
-            g_logo(B + 6, B + 5.5, 24, BLANCO, NEGRO, tag=False)]
-    body += filas(B + 6, B + 20.0, 6.4, 2.05, NEGRO, NARANJA, NEGRO, weight=600)
-    body.append(g_qr(fw - B - 6 - qs, fh - B - 6.5 - qs, qs, NEGRO, BLANCO))
-    return [], body
+    return [], dorso_std(fw, fh, rect(fw, fh, NEGRO), NARANJA, BLANCO, NARANJA, NEGRO, BLANCO)
 
 
 def d02(fw, fh):
-    d1, g1 = glow("g2b", fw * 0.25, fh + 8, 50, 22, NARANJA, 0.28)
-    body = ['<g id="Fondo">', rect(fw, fh, NEGRO), g1, "</g>"]
-    pw, ph, x = 52.0, 8.6, B + 4.5
-    body.append('<g id="Pildoras">')
-    for i, (k, lab, val) in enumerate(CONTACTOS[:3]):
-        body.append(pildora(x, B + 6.0 + i * 11.0, pw, ph, k, lab, val))
+    x0, y0, x1, y1 = caja(fw, fh)
+    d1, g1 = glow("g2b", fw * 0.25, fh + 8, 50, 22, NARANJA, 0.22)
+    body = ['<g id="Fondo">', rect(fw, fh, NEGRO), g1, "</g>", '<g id="Pildoras">']
+    ph, gap, pw = 9.4, 4.0, 50.0
+    py = (fh - (3 * ph + 2 * gap)) / 2
+    for i, (k, lab, val) in enumerate(CONTACTOS):
+        body.append(pildora(x0 - 1.5, py + i * (ph + gap), pw, ph, k, lab, val))
     body.append("</g>")
     qs = 20.0
-    qx = fw - B - 6.5 - qs
-    body.append(g_qr(qx, B + 6.5, qs, NEGRO, BLANCO))
-    body.append(T(qx + qs / 2, B + 34.5, WEB, 2.2, BLANCO, weight=600, anchor="middle"))
-    body.append(T(qx + qs / 2, B + 38.0, "ESCANEÁ", 1.45, NARANJA, weight=700, ls=0.35,
+    grupo = qs + 2 * QP + 4.0
+    qx, qy = x1 - QP - qs, (fh - grupo) / 2 + QP
+    body.append(g_qr(qx, qy, qs, NEGRO, BLANCO))
+    body.append(T(qx + qs / 2, qy + qs + QP + 3.6, "ESCANEÁ", 1.5, NARANJA, weight=700, ls=0.4,
                   anchor="middle"))
     return [d1], body
 
 
 def d03(fw, fh):
-    bw = 32.0
-    qs = 19.0
+    x0, y0, x1, y1 = caja(fw, fh)
+    bw = B + 32.0
+    qs = 20.0
+    qy = (fh - qs - 4.5) / 2
     body = ['<g id="Fondo">', rect(fw, fh, BLANCO),
-            f'<rect id="Bloque" x="0" y="0" width="{B+bw}" height="{fh}" fill="{NARANJA}"/>',
-            g_castillo(-40, fh - 26, 110, NARANJA_O, 0.6).replace(
-                'id="Castillo"', 'id="Castillo" clip-path="url(#c3d)"'), "</g>"]
-    defs = [f'<clipPath id="c3d"><rect x="0" y="0" width="{(B+bw)/ (110/1920):.1f}" height="2000"/></clipPath>']
-    body.append(g_qr(B + (bw - qs) / 2, B + 8.0, qs, NEGRO, BLANCO))
-    x = B + bw + 7.0
-    body.append(g_logo(x, B + 5.5, 30, NARANJA, NEGRO, tag=False))
-    body += filas(x, B + 20.5, 6.6, 1.9, NARANJA, BLANCO, NEGRO, c_lab=GRIS, size=2.35, weight=600)
-    return defs, body
+            f'<rect id="Bloque" x="0" y="0" width="{bw}" height="{fh}" fill="{NARANJA}"/>', "</g>",
+            g_qr((bw + B - qs) / 2, qy, qs, NEGRO, BLANCO),
+            T((bw + B) / 2, qy + qs + QP + 3.6, "ESCANEÁ", 1.5, BLANCO, weight=700, ls=0.4,
+              anchor="middle")]
+    x = bw + 7.0
+    body.append(g_logo(x, y0, 26, NARANJA, NEGRO, tag=False))
+    body += filas(x, y1 - 2.15 - 2 * 7.2, 7.2, 1.9, NARANJA, BLANCO, NEGRO, c_lab=GRIS, size=TX,
+                  weight=600)
+    return [], body
 
 
 def d04(fw, fh):
-    body = ['<g id="Fondo">', rect(fw, fh, NEGRO), "</g>"]
-    x = B + 6.0
-    body.append(T(x, B + 9.5, "Profesionalizamos", 4.1, BLANCO, weight=700, family="Montserrat",
-                  ls=-0.08))
-    body.append(T(x, B + 14.8, "tu marca.", 4.1, NARANJA, weight=700, family="Montserrat", ls=-0.08))
-    body.append('<g id="Contactos">')
+    x0, y0, x1, y1 = caja(fw, fh)
+    body = ['<g id="Fondo">', rect(fw, fh, NEGRO), "</g>",
+            T(x0, y0 + 3.6, "Profesionalizamos", 4.0, BLANCO, weight=700, family="Montserrat", ls=-0.08),
+            T(x0, y0 + 8.8, "tu marca.", 4.0, NARANJA, weight=700, family="Montserrat", ls=-0.08),
+            '<g id="Contactos">']
     for i, (k, lab, val) in enumerate(CONTACTOS):
-        yy = B + 25.5 + i * 5.0
-        body.append(T(x, yy, lab.upper(), 1.45, NARANJA, weight=700, ls=0.3))
-        body.append(T(x + 13.5, yy, val, 2.4, BLANCO, weight=500))
+        yy = y1 - 1.4 - (2 - i) * 5.4
+        body.append(T(x0, yy, lab.upper(), 1.45, NARANJA, weight=700, ls=0.3))
+        body.append(T(x0 + 14.0, yy, val, TX, BLANCO, weight=500))
     body.append("</g>")
-    qs = 17.0
-    body.append(g_qr(fw - B - 6 - qs, fh - B - 6 - qs, qs, NEGRO, BLANCO))
-    body.append(g_palabra("mas", fw - B - 6 - 12, B + 5.5, 12, NARANJA, gid="Mas"))
+    body.append(g_qr(x1 - QP - QS, y1 - QP - QS, QS, NEGRO, BLANCO))
+    body.append(g_palabra("mas", x1 - 11, y0, 11, NARANJA, gid="Mas"))
     return [], body
 
 
 def d05(fw, fh):
-    qs = 19.0
-    body = ['<g id="Fondo">', rect(fw, fh, NARANJA), g_castillo(-3, fh - 54.5, 102, BLANCO, 0.18),
-            "</g>", g_logo(B + 6, B + 6, 30, BLANCO, NEGRO, tag=False)]
-    body += filas(B + 6, B + 22.0, 6.3, 2.0, BLANCO, NARANJA, BLANCO, weight=700)
-    body.append(g_qr(fw - B - 7 - qs, (fh - qs) / 2, qs, NEGRO, BLANCO))
-    return [], body
+    return [], dorso_std(fw, fh, rect(fw, fh, NARANJA), BLANCO, NEGRO, BLANCO, NARANJA, NEGRO,
+                         extra=(textura(fw, fh, LINEA_CAST, 0.25),))
 
 
 def d06(fw, fh):
-    sw = 36.0
+    x0, y0, x1, y1 = caja(fw, fh)
+    sw = B + 36.0
     qs = 21.0
+    qy = (fh - qs - 4.5) / 2
     body = ['<g id="Fondo">', rect(fw, fh, NEGRO),
-            f'<rect id="Bloque" x="0" y="0" width="{B+sw}" height="{fh}" fill="{NARANJA}"/>', "</g>",
-            g_qr(B + (sw - qs) / 2, B + 6.5, qs, NEGRO, BLANCO),
-            T(B + sw / 2, B + 34.5, "ESCANEÁ Y CONOCENOS", 1.5, NEGRO, weight=700, ls=0.25,
-              anchor="middle")]
-    body += filas(B + sw + 7.0, B + 10.0, 8.6, 2.1, "marca", BLANCO, BLANCO, c_lab=GRIS, size=2.4,
+            f'<rect id="Bloque" x="0" y="0" width="{sw}" height="{fh}" fill="{NARANJA}"/>', "</g>",
+            g_qr((sw + B - qs) / 2, qy, qs, NEGRO, BLANCO),
+            T((sw + B) / 2, qy + qs + QP + 3.6, "ESCANEÁ Y CONOCENOS", 1.45, NEGRO, weight=700,
+              ls=0.25, anchor="middle")]
+    dy = 9.0
+    body += filas(sw + 7.0, fh / 2 - dy, dy, 2.2, "marca", BLANCO, BLANCO, c_lab=GRIS, size=TX,
                   weight=600)
     return [], body
 
 
 def d07(fw, fh):
+    x0, y0, x1, y1 = caja(fw, fh)
     qs = 25.0
+    qy = (fh - qs - 4.5) / 2
     body = ['<g id="Fondo">', rect(fw, fh, BLANCO), "</g>",
-            g_qr(B + 6.5, (fh - qs) / 2 - 1.5, qs, NEGRO, BLANCO),
-            T(B + 6.5 + qs / 2, (fh + qs) / 2 + 2.6, "ESCANEÁ", 1.6, NARANJA, weight=700, ls=0.4,
+            g_qr(x0 + QP, qy, qs, NEGRO, BLANCO),
+            T(x0 + QP + qs / 2, qy + qs + QP + 3.6, "ESCANEÁ", 1.5, NARANJA, weight=700, ls=0.4,
               anchor="middle")]
-    x = B + 40.0
-    body.append(g_logo(x, B + 5.5, 34, NARANJA, NEGRO, NEGRO, NARANJA))
-    body.append(f'<rect x="{x}" y="{B+26.2}" width="44" height="0.2" fill="{NEGRO}" opacity="0.2"/>')
-    body += filas(x, B + 30.0, 4.8, 1.55, NEGRO, BLANCO, NEGRO, size=2.25, items=CONTACTOS[:3])
+    x = B + 42.0
+    body.append(g_logo(x, y0, 32, NARANJA, NEGRO, NEGRO, NARANJA))
+    body += filas(x, y1 - 0.85 - 2 * 5.6, 5.6, 1.7, NEGRO, BLANCO, NEGRO, size=2.4, weight=500)
     return [], body
 
 
 def d08(fw, fh):
-    qs = 18.0
-    body = ['<g id="Fondo">', rect(fw, fh, NEGRO),
-            g_palabra("mas", 34, -6, 82, "#1E1E26", gid="Mas-gigante"), "</g>",
-            g_logo(B + 6, B + 6, 26, NARANJA, BLANCO, tag=False)]
-    body += filas(B + 6, B + 21.5, 6.3, 2.0, NARANJA, NEGRO, BLANCO, weight=600)
-    body.append(g_qr(fw - B - 6 - qs, fh - B - 6 - qs, qs, NEGRO, BLANCO))
-    return [], body
+    return [], dorso_std(fw, fh, rect(fw, fh, NEGRO), NARANJA, BLANCO, NARANJA, NEGRO, BLANCO,
+                         extra=(g_palabra("mas", 36, -8, 80, "#17171E", gid="Mas-gigante"),))
 
 
 def d09(fw, fh):
-    qs = 18.0
+    x0, y0, x1, y1 = caja(fw, fh)
     body = ['<g id="Fondo">', rect(fw, fh, NARANJA),
-            almenas(9.0, fw, 3.2, 4.6, NEGRO).replace('M-1 9.0', 'M-1 9.0').replace(
-                f"L{fw+1} 500L-1 500Z", f"L{fw+1} -1L-1 -1Z"), "</g>"]
-    # almenas invertidas: banda negra arriba
-    body += filas(B + 6, B + 16.5, 6.6, 2.05, NEGRO, NARANJA, NEGRO, weight=700)
-    body.append(g_qr(fw - B - 6.5 - qs, fh - B - 5.5 - qs, qs, NEGRO, BLANCO))
+            almenas(8.5, fw, 3.0, 4.6, NEGRO).replace(f"L{fw+1} 500L-1 500Z", f"L{fw+1} -1L-1 -1Z"),
+            "</g>"]
+    qx, qy = x1 - QP - QS, y1 - QP - QS
+    base = qy + QS
+    body += filas(x0, base - 0.85 - 2 * 6.3, 6.3, 2.0, NEGRO, NARANJA, NEGRO, size=TX, weight=700)
+    body.append(g_qr(qx, qy, QS, NEGRO, BLANCO))
     return [], body
 
 
 def d10(fw, fh):  # vertical
-    d1, g1 = glow("g10", fw / 2, fh + 6, 40, 30, NARANJA, 0.35)
+    x0, y0, x1, y1 = caja(fw, fh)
+    d1, g1 = glow("g10", fw / 2, fh + 6, 40, 30, NARANJA, 0.28)
     qs = 26.0
     body = ['<g id="Fondo">', rect(fw, fh, NEGRO), g1, "</g>",
-            g_logo((fw - 22) / 2, B + 5.0, 22, NARANJA, BLANCO, tag=False),
-            g_qr((fw - qs) / 2, B + 19.5, qs, NEGRO, BLANCO),
-            T(fw / 2, B + 50.3, "ESCANEÁ", 1.6, NARANJA, weight=700, ls=0.4, anchor="middle")]
-    body += filas(B + 5.0, B + 57.5, 6.3, 1.9, "marca", BLANCO, BLANCO, size=2.3, weight=600)
+            g_logo((fw - 24) / 2, y0, 24, NARANJA, BLANCO, tag=False),
+            g_qr((fw - qs) / 2, y0 + 16.0, qs, NEGRO, BLANCO),
+            T(fw / 2, y0 + 16.0 + qs + QP + 3.6, "ESCANEÁ", 1.55, NARANJA, weight=700, ls=0.4,
+              anchor="middle")]
+    body += filas(x0, y1 - 0.85 - 2 * 6.6, 6.6, 2.0, "marca", BLANCO, BLANCO, size=TX, weight=600)
     return [d1], body
 
 
 # ================================================================ opciones
 H_, V_ = (90.0, 50.0), (50.0, 90.0)
 OPCIONES = [
-    (1, "01-castillo-naranja", "Castillo naranja — la portada como fondo", H_, f01, d01),
-    (2, "02-noche", "Noche — castillo dorado sobre negro, estilo web", H_, f02, d02),
-    (3, "03-horizonte", "Horizonte — el castillo se invierte en el suelo negro", H_, f03, d03),
-    (4, "04-torre", "Torre — zoom al dibujo + logo en chip negro", H_, f04, d04),
-    (5, "05-minimal", "Minimal — blanca con castillo naranja", H_, f05, d05),
+    (1, "01-castillo-naranja", "Naranja — logo al centro, castillo como textura", H_, f01, d01),
+    (2, "02-noche", "Noche — negro con brillo cálido, píldoras al dorso", H_, f02, d02),
+    (3, "03-horizonte", "Horizonte — base negra con el slogan", H_, f03, d03),
+    (4, "04-torre", "Torre — textura de torres + logo en chip negro", H_, f04, d04),
+    (5, "05-minimal", "Minimal — blanca con textura naranja", H_, f05, d05),
     (6, "06-web", "Web — negro con brillo y píldoras de contacto", H_, f06, d06),
     (7, "07-portal", "Portal — el castillo visto por un arco", H_, f07, d07),
     (8, "08-tipografica", "Tipográfica — 'más castillo' gigante tono sobre tono", H_, f08, d08),

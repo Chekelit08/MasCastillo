@@ -19,12 +19,12 @@ Cada opción tiene un frente y un dorso. Medida: **90 × 50 mm** al corte (la op
 1. **Naranja:** logo al centro con el castillo como textura. El dorso es negro.
 2. **Noche:** negro con un brillo cálido. El dorso usa las píldoras de contacto de la web.
 3. **Horizonte:** base negra con el slogan. El dorso tiene un bloque naranja con el QR.
-4. **Torre:** textura de torres y el logo en un chip negro. El dorso es editorial, con la frase "Profesionalizamos tu marca."
-5. **Minimal:** blanca con una textura naranja. El dorso es naranja.
+4. **Diagonal:** corte negro sobre naranja. El dorso es negro, con el triángulo naranja en espejo.
+5. **Marco:** negro con un filete naranja. El dorso es naranja con un filete negro.
 6. **Web:** negro con brillo. El dorso está dividido en naranja y negro, con los íconos de cada red.
-7. **Portal:** el castillo se ve a través de un arco. El dorso es blanco con un QR grande.
-8. **Tipográfica:** "más castillo" gigante, tono sobre tono.
-9. **Almenas:** una muralla almenada naranja sobre negro.
+7. **Atardecer:** degradé de naranja cálido. El dorso es negro con una barra en degradé al pie.
+8. **Columna:** franja negra con el slogan vertical. El dorso tiene una columna negra con el QR.
+9. **Visor:** escuadras que enfocan el logo en el frente y el QR en el dorso.
 10. **Vertical:** formato 50 × 90 mm con un QR grande.
 
 ## Antes de imprenta

@@ -330,22 +330,6 @@ def f03(fw, fh):
                     NARANJA, weight=700, family="Montserrat", ls=0.42)]
 
 
-def f04(fw, fh):
-    x0, y0, x1, y1 = caja(fw, fh)
-    lw = 32.0
-    lh = logo_h(lw)
-    pw, ph = lw + 9.0, lh + 8.0
-    return [], ['<g id="Fondo">', rect(fw, fh, NARANJA),
-                g_castillo(-112, -38, 215, NEGRO, 0.11, "Castillo-zoom"), "</g>",
-                f'<rect id="Chip" x="{x0-2}" y="{y1+2-ph}" width="{pw}" height="{ph}" rx="2" fill="{NEGRO}"/>',
-                g_logo(x0 + 2.5, y1 + 2 - ph + 4.0, lw, NARANJA, BLANCO, BLANCO, NARANJA)]
-
-
-def f05(fw, fh):
-    lw = 44.0
-    return [], ['<g id="Fondo">', rect(fw, fh, BLANCO), textura(fw, fh, NARANJA, 0.13), "</g>",
-                g_logo((fw - lw) / 2, (fh - logo_h(lw)) / 2 - 3.0, lw, NARANJA, NEGRO, NEGRO, NARANJA)]
-
 
 def f06(fw, fh):
     d1, g1 = glow("g6a", fw * 0.5, fh + 4, 52, 24, NARANJA, 0.45)
@@ -361,37 +345,6 @@ def f06(fw, fh):
                         weight=600, family="Montserrat", ls=0.32, anchor="middle")]
 
 
-def f07(fw, fh):
-    x0, y0, x1, y1 = caja(fw, fh)
-    aw, top = 30.0, 8.0
-    ax = x1 + 2.0 - aw
-    r = aw / 2
-    arco = f"M{ax} {fh+1}V{top+r}A{r} {r} 0 0 1 {ax+aw} {top+r}V{fh+1}Z"
-    defs = [f'<clipPath id="c7"><path d="{arco}"/></clipPath>']
-    lw = 38.0
-    return defs, ['<g id="Fondo">', rect(fw, fh, NARANJA),
-                  f'<path id="Portal" fill="{NEGRO}" d="{arco}"/>',
-                  f'<g clip-path="url(#c7)">{g_castillo(-30, 8, 140, NARANJA, 0.22)}</g>', "</g>",
-                  g_logo(x0, (fh - logo_h(lw)) / 2, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
-
-
-def f08(fw, fh):
-    x0, y0, x1, y1 = caja(fw, fh)
-    lw = 44.0
-    return [], ['<g id="Fondo">', rect(fw, fh, NARANJA),
-                g_palabra("castillo", -10, fh - palabra_h("castillo", 150) + 9, 150, LINEA_CAST, 0.35,
-                          gid="Castillo-gigante"),
-                g_palabra("mas", 50, -10, 70, LINEA_CAST, 0.25, gid="Mas-gigante"), "</g>",
-                g_logo(x0, (fh - logo_h(lw)) / 2, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
-
-
-def f09(fw, fh):
-    lw = 42.0
-    lh = logo_h(lw, tag=False)
-    return [], ['<g id="Fondo">', rect(fw, fh, NEGRO), almenas(fh - 13.0, fw, 3.2, 4.6, NARANJA), "</g>",
-                g_logo((fw - lw) / 2, (fh - 16.2 - lh) / 2 + 0.5, lw, NARANJA, BLANCO, tag=False),
-                T(fw / 2, fh - 6.6, "PROFESIONALIZAMOS TU MARCA", 1.9, NEGRO, weight=700,
-                  family="Montserrat", ls=0.38, anchor="middle")]
 
 
 def f10(fw, fh):  # vertical
@@ -441,26 +394,6 @@ def d03(fw, fh):
     return [], body
 
 
-def d04(fw, fh):
-    x0, y0, x1, y1 = caja(fw, fh)
-    body = ['<g id="Fondo">', rect(fw, fh, NEGRO), "</g>",
-            T(x0, y0 + 3.6, "Profesionalizamos", 4.0, BLANCO, weight=700, family="Montserrat", ls=-0.08),
-            T(x0, y0 + 8.8, "tu marca.", 4.0, NARANJA, weight=700, family="Montserrat", ls=-0.08),
-            '<g id="Contactos">']
-    for i, (k, lab, val) in enumerate(CONTACTOS):
-        yy = y1 - 1.4 - (2 - i) * 5.4
-        body.append(T(x0, yy, lab.upper(), 1.45, NARANJA, weight=700, ls=0.3))
-        body.append(T(x0 + 14.0, yy, val, TX, BLANCO, weight=500))
-    body.append("</g>")
-    body.append(g_qr(x1 - QP - QS, y1 - QP - QS, QS, NEGRO, BLANCO))
-    body.append(g_palabra("mas", x1 - 11, y0, 11, NARANJA, gid="Mas"))
-    return [], body
-
-
-def d05(fw, fh):
-    return [], dorso_std(fw, fh, rect(fw, fh, NARANJA), BLANCO, NEGRO, BLANCO, NARANJA, NEGRO,
-                         extra=(textura(fw, fh, LINEA_CAST, 0.25),))
-
 
 def d06(fw, fh):
     x0, y0, x1, y1 = caja(fw, fh)
@@ -478,35 +411,6 @@ def d06(fw, fh):
     return [], body
 
 
-def d07(fw, fh):
-    x0, y0, x1, y1 = caja(fw, fh)
-    qs = 25.0
-    qy = (fh - qs - 4.5) / 2
-    body = ['<g id="Fondo">', rect(fw, fh, BLANCO), "</g>",
-            g_qr(x0 + QP, qy, qs, NEGRO, BLANCO),
-            T(x0 + QP + qs / 2, qy + qs + QP + 3.6, "ESCANEÁ", 1.5, NARANJA, weight=700, ls=0.4,
-              anchor="middle")]
-    x = B + 42.0
-    body.append(g_logo(x, y0, 32, NARANJA, NEGRO, NEGRO, NARANJA))
-    body += filas(x, y1 - 0.85 - 2 * 5.6, 5.6, 1.7, NEGRO, BLANCO, NEGRO, size=2.4, weight=500)
-    return [], body
-
-
-def d08(fw, fh):
-    return [], dorso_std(fw, fh, rect(fw, fh, NEGRO), NARANJA, BLANCO, NARANJA, NEGRO, BLANCO,
-                         extra=(g_palabra("mas", 36, -8, 80, "#17171E", gid="Mas-gigante"),))
-
-
-def d09(fw, fh):
-    x0, y0, x1, y1 = caja(fw, fh)
-    body = ['<g id="Fondo">', rect(fw, fh, NARANJA),
-            almenas(8.5, fw, 3.0, 4.6, NEGRO).replace(f"L{fw+1} 500L-1 500Z", f"L{fw+1} -1L-1 -1Z"),
-            "</g>"]
-    qx, qy = x1 - QP - QS, y1 - QP - QS
-    base = qy + QS
-    body += filas(x0, base - 0.85 - 2 * 6.3, 6.3, 2.0, NEGRO, NARANJA, NEGRO, size=TX, weight=700)
-    body.append(g_qr(qx, qy, QS, NEGRO, BLANCO))
-    return [], body
 
 
 def d10(fw, fh):  # vertical
@@ -522,18 +426,132 @@ def d10(fw, fh):  # vertical
     return [d1], body
 
 
+# ---------------------------------------------------------------- serie 2 (reemplazan 4, 5, 7, 8, 9)
+def esquinas(x, y, w, h, largo, grosor, color, gid="Esquinas"):
+    """Cuatro escuadras tipo visor (enfocar la marca)."""
+    L, g = largo, grosor
+    d = (f"M{x} {y+L}V{y}H{x+L}V{y+g}H{x+g}V{y+L}Z"
+         f"M{x+w-L} {y}H{x+w}V{y+L}H{x+w-g}V{y+g}H{x+w-L}Z"
+         f"M{x+w} {y+h-L}V{y+h}H{x+w-L}V{y+h-g}H{x+w-g}V{y+h-L}Z"
+         f"M{x+L} {y+h}H{x}V{y+h-L}H{x+g}V{y+h-g}H{x+L}Z")
+    return f'<path id="{gid}" fill="{color}" d="{d}"/>'
+
+
+DEGRADE = ("#F7A02A", "#E8570E")   # naranja de marca hacia un naranja tostado
+
+
+def f04(fw, fh):  # Diagonal
+    x0, y0, x1, y1 = caja(fw, fh)
+    corte = f"M{fw*0.62:.2f} {fh+1}L{fw+1} {fh*0.18:.2f}V{fh+1}Z"
+    lw = 42.0
+    return [], ['<g id="Fondo">', rect(fw, fh, NARANJA), textura(fw, fh, LINEA_CAST, 0.30),
+                f'<path id="Diagonal" fill="{NEGRO}" d="{corte}"/>', "</g>",
+                g_logo(x0, (fh - logo_h(lw)) / 2, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
+
+
+def d04(fw, fh):
+    tri = f"M{fw*0.70:.2f} -1H{fw+1}V{fh*0.42:.2f}Z"
+    return [], dorso_std(fw, fh, rect(fw, fh, NEGRO), NARANJA, BLANCO, NARANJA, NEGRO, BLANCO,
+                         extra=(f'<path id="Diagonal" fill="{NARANJA}" d="{tri}"/>',))
+
+
+def f05(fw, fh):  # Marco
+    lw = 44.0
+    i = B + 3.2
+    return [], ['<g id="Fondo">', rect(fw, fh, NEGRO), textura(fw, fh, NARANJA, 0.07),
+                f'<rect id="Marco" x="{i}" y="{i}" width="{fw-2*i}" height="{fh-2*i}" fill="none" '
+                f'stroke="{NARANJA}" stroke-width="0.4"/>', "</g>",
+                g_logo((fw - lw) / 2, (fh - logo_h(lw)) / 2, lw, NARANJA, BLANCO, BLANCO, NARANJA)]
+
+
+def d05(fw, fh):
+    i = B + 3.2
+    return [], dorso_std(fw, fh, rect(fw, fh, NARANJA), BLANCO, NEGRO, NEGRO, NARANJA, NEGRO,
+                         extra=(f'<rect id="Marco" x="{i}" y="{i}" width="{fw-2*i}" height="{fh-2*i}" '
+                                f'fill="none" stroke="{NEGRO}" stroke-width="0.4"/>',))
+
+
+def f07(fw, fh):  # Atardecer (degradé)
+    lw = 46.0
+    defs = [f'<linearGradient id="g7" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="{fw}" '
+            f'y2="{fh}"><stop offset="0" stop-color="{DEGRADE[0]}"/>'
+            f'<stop offset="1" stop-color="{DEGRADE[1]}"/></linearGradient>']
+    return defs, ['<g id="Fondo">', rect(fw, fh, "url(#g7)"), textura(fw, fh, NEGRO, 0.08), "</g>",
+                  g_logo((fw - lw) / 2, (fh - logo_h(lw)) / 2 - 1.0, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
+
+
+def d07(fw, fh):
+    defs = [f'<linearGradient id="g7d" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="{fw}" '
+            f'y2="0"><stop offset="0" stop-color="{DEGRADE[0]}"/>'
+            f'<stop offset="1" stop-color="{DEGRADE[1]}"/></linearGradient>']
+    barra = f'<rect id="Barra" x="0" y="{fh-B-2.2}" width="{fw}" height="{B+2.2}" fill="url(#g7d)"/>'
+    body = dorso_std(fw, fh - 2.2, rect(fw, fh, NEGRO), NARANJA, BLANCO, NARANJA, NEGRO, BLANCO,
+                     extra=(barra,))
+    return defs, body
+
+
+def f08(fw, fh):  # Columna
+    col = B + 16.0
+    lw = 42.0
+    cx = col + (fw - col) / 2
+    return [], ['<g id="Fondo">', rect(fw, fh, NARANJA), textura(fw, fh, LINEA_CAST, 0.30),
+                f'<rect id="Columna" x="0" y="0" width="{col}" height="{fh}" fill="{NEGRO}"/>', "</g>",
+                f'<g id="Slogan-vertical" transform="translate({col/2+B/2+0.7:.3f} {fh/2:.3f}) rotate(-90)">'
+                + T(0, 0, "PROFESIONALIZAMOS TU MARCA", 1.75, NARANJA, weight=700,
+                    family="Montserrat", ls=0.38, anchor="middle") + "</g>",
+                g_logo(cx - lw / 2, (fh - logo_h(lw, tag=False)) / 2, lw, BLANCO, NEGRO, tag=False)]
+
+
+def d08(fw, fh):
+    x0, y0, x1, y1 = caja(fw, fh)
+    col = B + 34.0
+    qs = 21.0
+    qy = (fh - qs - 4.5) / 2
+    body = ['<g id="Fondo">', rect(fw, fh, NARANJA),
+            f'<rect id="Columna" x="0" y="0" width="{col}" height="{fh}" fill="{NEGRO}"/>', "</g>",
+            g_qr((col + B - qs) / 2, qy, qs, NEGRO, BLANCO),
+            T((col + B) / 2, qy + qs + QP + 3.6, "ESCANEÁ", 1.5, NARANJA, weight=700, ls=0.4,
+              anchor="middle")]
+    x = col + 7.0
+    body.append(g_logo(x, y0, 26, BLANCO, NEGRO, tag=False))
+    body += filas(x, y1 - 0.85 - 2 * 6.3, 6.3, 2.0, NEGRO, NARANJA, NEGRO, size=TX, weight=600)
+    return [], body
+
+
+def f09(fw, fh):  # Visor
+    lw = 42.0
+    lh = logo_h(lw)
+    bx, by = (fw - lw) / 2 - 6.0, (fh - lh) / 2 - 5.0
+    return [], ['<g id="Fondo">', rect(fw, fh, NARANJA), textura(fw, fh, LINEA_CAST, 0.30), "</g>",
+                esquinas(bx, by, lw + 12.0, lh + 10.0, 4.5, 0.7, NEGRO),
+                g_logo((fw - lw) / 2, (fh - lh) / 2, lw, BLANCO, NEGRO, BLANCO, BLANCO)]
+
+
+def d09(fw, fh):
+    x0, y0, x1, y1 = caja(fw, fh)
+    qs = 18.0
+    qx, qy = x1 - 3.2 - qs, y1 - 3.2 - qs
+    body = ['<g id="Fondo">', rect(fw, fh, NEGRO), "</g>",
+            g_logo(x0, y0, 24, NARANJA, BLANCO, tag=False),
+            esquinas(qx - 3.2, qy - 3.2, qs + 6.4, qs + 6.4, 3.6, 0.6, NARANJA),
+            g_qr(qx, qy, qs, NEGRO, BLANCO, pad=1.0)]
+    base = qy + qs
+    body += filas(x0, base - 0.85 - 2 * 6.3, 6.3, 2.0, NARANJA, NEGRO, BLANCO, size=TX, weight=600)
+    return [], body
+
+
 # ================================================================ opciones
 H_, V_ = (90.0, 50.0), (50.0, 90.0)
 OPCIONES = [
     (1, "01-castillo-naranja", "Naranja — logo al centro, castillo como textura", H_, f01, d01),
     (2, "02-noche", "Noche — negro con brillo cálido, píldoras al dorso", H_, f02, d02),
     (3, "03-horizonte", "Horizonte — base negra con el slogan", H_, f03, d03),
-    (4, "04-torre", "Torre — textura de torres + logo en chip negro", H_, f04, d04),
-    (5, "05-minimal", "Minimal — blanca con textura naranja", H_, f05, d05),
+    (4, "04-diagonal", "Diagonal — corte negro sobre naranja", H_, f04, d04),
+    (5, "05-marco", "Marco — negro con filete naranja", H_, f05, d05),
     (6, "06-web", "Web — negro con brillo y píldoras de contacto", H_, f06, d06),
-    (7, "07-portal", "Portal — el castillo visto por un arco", H_, f07, d07),
-    (8, "08-tipografica", "Tipográfica — 'más castillo' gigante tono sobre tono", H_, f08, d08),
-    (9, "09-almenas", "Almenas — muralla naranja sobre negro", H_, f09, d09),
+    (7, "07-atardecer", "Atardecer — degradé naranja cálido", H_, f07, d07),
+    (8, "08-columna", "Columna — franja negra con slogan vertical", H_, f08, d08),
+    (9, "09-visor", "Visor — escuadras que enfocan la marca y el QR", H_, f09, d09),
     (10, "10-vertical", "Vertical — formato 50 x 90 con QR grande", V_, f10, d10),
 ]
 

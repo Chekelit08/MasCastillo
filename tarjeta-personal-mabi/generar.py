@@ -636,7 +636,8 @@ OPCIONES += [
 
 
 # ---------- 11 · Pedido del cliente: composición de la 8 con el efecto de la 1
-FAN_1 = fan(dark="#021F14", light=VERDE_C, corner=VERDE_C, base1="#0E5A3A", base2=VERDE)
+# verdes oscurecidos a pedido del cliente (antes: base #0E5A3A→#063A27, luz #2F7A52)
+FAN_1 = fan(dark="#000F09", light="#1A5038", corner="#1A5038", base1="#063A27", base2="#02200F")
 
 
 def _frente_11(pref, lineas):
@@ -654,7 +655,7 @@ def _frente_11(pref, lineas):
 
 def _dorso_11(pref, lineas):
     # mismas facetas que el frente, en verde muy suave sobre crema
-    spec = fan(dark=VERDE, light=BLANCO, corner=ORO, base1=CREMA, base2=CREMA, a=0.16)
+    spec = fan(dark=VERDE, light=BLANCO, corner=ORO, base1=CREMA, base2=CREMA, a=0.22)
     defs, fbody = fondo(spec, pref)
     _, datos = dorso_08(None)
     i = datos.index("</g>", datos.index('<g id="Lineas-topograficas">'))

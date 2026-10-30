@@ -15,7 +15,7 @@
 | `MABI-tarjeta-NN-….pdf` | PDF de imprenta de 2 páginas (frente y dorso) con sangrado, TrimBox y BleedBox. También se abre en Illustrator. |
 | `preview-*.png` | Vista previa al corte. |
 
-`opciones/MABI-tarjetas-presentacion.png` (serie 1) y `MABI-tarjetas-presentacion-2.png` (serie 2), cada una también en `.pdf`, son las láminas con todas las opciones. `MABI-tarjetas-seleccion` es la preselección del cliente: opciones 1, 3, 5, 7, 8 y 9. `MABI-tarjetas-seleccion.svg` junta esas 6 opciones, frente y dorso, en un solo archivo para Illustrator para mostrarle al cliente.
+`opciones/MABI-tarjetas-presentacion.png` (serie 1) y `MABI-tarjetas-presentacion-2.png` (serie 2), cada una también en `.pdf`, son las láminas con todas las opciones. `MABI-tarjeta-final` (PNG y SVG) responde al pedido del cliente: la composición de la 8 con el efecto de facetas de la 1 (opción 11) y una variante híbrida que suma líneas suaves (opción 12). `MABI-tarjetas-seleccion` es la preselección del cliente: opciones 1, 3, 5, 7, 8 y 9. `MABI-tarjetas-seleccion.svg` junta esas 6 opciones, frente y dorso, en un solo archivo para Illustrator para mostrarle al cliente.
 
 ## Opciones
 

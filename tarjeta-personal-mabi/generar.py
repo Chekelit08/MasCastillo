@@ -635,6 +635,63 @@ OPCIONES += [
 ]
 
 
+# ---------- 11 · Pedido del cliente: composición de la 8 con el efecto de la 1
+FAN_1 = fan(dark="#021F14", light=VERDE_C, corner=VERDE_C, base1="#0E5A3A", base2=VERDE)
+
+
+def _frente_11(pref, lineas):
+    defs, fbody = fondo(FAN_1, pref)
+    body = ['<g id="Fondo">'] + fbody
+    if lineas:
+        body.append('<g id="Lineas-topograficas">')
+        body += _topo(FW - 4, FH + 2, 26, 3.0, 2.15, ORO, 0.16, 0.55, 0.06, seed=0.6)
+        body.append("</g>")
+    body.append("</g>")
+    lw = 44.0
+    body.append(g_logo_mabi(B + 7.0, (FH - logo_mabi_h(lw)) / 2, lw, ORO, CREMA, CREMA, ORO)[0])
+    return defs, body
+
+
+def _dorso_11(pref, lineas):
+    # mismas facetas que el frente, en verde muy suave sobre crema
+    spec = fan(dark=VERDE, light=BLANCO, corner=ORO, base1=CREMA, base2=CREMA, a=0.16)
+    defs, fbody = fondo(spec, pref)
+    _, datos = dorso_08(None)
+    i = datos.index("</g>", datos.index('<g id="Lineas-topograficas">'))
+    resto = datos[i + 2:]  # todo lo que va después del fondo de la 8
+    body = ['<g id="Fondo">'] + fbody
+    if lineas:
+        body.append('<g id="Lineas-topograficas">')
+        body += _topo(-6, -4, 22, 3.0, 2.15, VERDE, 0.14, 0.35, 0.04, seed=2.1)
+        body.append("</g>")
+    body.append("</g>")
+    return defs, body + resto
+
+
+def frente_11(op):
+    return _frente_11("o11", False)
+
+
+def dorso_11(op):
+    return _dorso_11("d11", False)
+
+
+def frente_12(op):
+    return _frente_11("o12", True)
+
+
+def dorso_12(op):
+    return _dorso_11("d12", True)
+
+
+OPCIONES += [
+    {"n": 11, "slug": "11-final-facetas", "serie": 3, "ff": frente_11, "fd": dorso_11,
+     "nombre": "8 + efecto de la 1 — facetas en lugar de líneas"},
+    {"n": 12, "slug": "12-final-hibrida", "serie": 3, "ff": frente_12, "fd": dorso_12,
+     "nombre": "8 + efecto de la 1 — facetas con líneas suaves"},
+]
+
+
 # opciones que eligió el cliente (lámina de preselección)
 SELECCION = (1, 3, 5, 7, 8, 9)
 
@@ -730,6 +787,8 @@ def main():
     hoja_presentacion(2, "MABI-tarjetas-presentacion-2")
     hoja_presentacion(None, "MABI-tarjetas-seleccion", SELECCION)
     svg_unico(SELECCION, os.path.join(OUT, "MABI-tarjetas-seleccion.svg"))
+    hoja_presentacion(3, "MABI-tarjeta-final")
+    svg_unico((11, 12), os.path.join(OUT, "MABI-tarjeta-final.svg"))
 
 
 def hoja_presentacion(serie, nombre, numeros=None):

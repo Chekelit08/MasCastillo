@@ -188,10 +188,64 @@ def contratapa_3():
         g_logo(mid - 22, FH - B - 12 - logo_h(44), 44, NEGRO, NEGRO, NEGRO, "Logo-chico")]
 
 
+# ================================================================ IDEA 4 · Torres de píldoras
+# El castillo dibujado con la forma de píldora de la marca (los trazos
+# redondeados de la "ll" de castillo): cada torre es una píldora negra.
+def pildoras(x0, base, ancho, gap, alturas, color=NEGRO, gid="Torres"):
+    out = [f'<g id="{gid}">']
+    for i, h in enumerate(alturas):
+        x = x0 + i * (ancho + gap)
+        out.append(f'<rect x="{x:.3f}" y="{base - h:.3f}" width="{ancho}" height="{h + 20:.3f}" '
+                   f'rx="{ancho / 2}" fill="{color}"/>')
+    out.append("</g>")
+    return "".join(out)
+
+
+ALTURAS_4 = [62, 88, 112, 150, 112, 88, 62]
+
+
+def tapa_4():
+    an, gap = 15.0, 5.5
+    n = len(ALTURAS_4)
+    x0 = FW - B - 16 - (n * an + (n - 1) * gap)
+    alta = x0 + 3 * (an + gap)          # la torre más alta lleva el año
+    base = FH
+    ymid = base - ALTURAS_4[3] + 34       # centro del año, en la parte alta de la torre
+    return [
+        '<g id="Fondo">', rect(NARANJA), "</g>",
+        pildoras(x0, base, an, gap, ALTURAS_4),
+        f'<g id="Anio-en-torre" transform="translate({alta + an / 2 + 4.4:.3f} {ymid:.3f}) rotate(-90)">'
+        + T(0, 0, ANIO, 12.5, NARANJA, family="Nunito", weight=900, ls=0.5, anchor="middle") + "</g>",
+        g_logo(B + 22, B + 20, 84, NEGRO, NEGRO, NEGRO),
+        T(B + 20, FH - B - 22, "agenda", 30, NEGRO, family="Nunito", weight=900, gid="Agenda"),
+    ]
+
+
+def contratapa_4():
+    an, gap = 8.0, 3.0
+    alturas = [h * 0.42 for h in ALTURAS_4]   # el mismo castillo de la tapa, en chico
+    n = len(alturas)
+    tot = n * an + (n - 1) * gap
+    x0 = (FW - tot) / 2
+    mid = FW / 2
+    pw, ph = 74.0, 11.0
+    return [
+        '<g id="Fondo">', rect(NARANJA), "</g>",
+        pildoras(x0, FH, an, gap, alturas, gid="Castillo-chico"),
+        f'<g id="Etiqueta">{rect(NEGRO, mid - pw / 2, B + 26, pw, ph, "Etiqueta-fondo", rx=ph / 2)}'
+        + T(mid + 0.5, B + 26 + ph / 2 + 1.75, "LA REGLA DE ORO", 4.8, NARANJA, weight=800, ls=1.0,
+            anchor="middle") + "</g>",
+        parrafo(mid, B + 66, REGLA_VOS, 15.5, 18.5, NEGRO, weight=900, anchor="middle"),
+        T(mid, B + 66 + 3 * 18.5 + 15, CITA, 5.0, NEGRO, weight=800, ls=1.5, anchor="middle", gid="Cita"),
+        g_logo(FW - B - 16 - 34, B + 14, 34, NEGRO, NEGRO, NEGRO, "Logo-chico"),
+    ]
+
+
 IDEAS = [
     (1, "01-franja", "Franja — como la original: franja negra con AGENDA 2027", tapa_1, contratapa_1),
     (2, "02-logo-grande", "Logo protagonista — naranja pleno, logo gigante y píldora", tapa_2, contratapa_2),
     (3, "03-castillo", "Castillo — textura de castillo y 2027 gigante", tapa_3, contratapa_3),
+    (4, "04-torres", "Torres — el castillo hecho con las píldoras de la marca", tapa_4, contratapa_4),
 ]
 
 

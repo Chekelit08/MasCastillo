@@ -15,6 +15,13 @@ Formato **A4 apaisado (297 × 210 mm)** con 3 mm de sangrado, el mismo que el in
 - `ideas/NN-…/tapa.svg` y `contratapa.svg`: para editar en Illustrator. La capa `Guias-NO-IMPRIMIR` marca el corte y el margen.
 - `ideas/Agenda-MasCastillo-ideas.png` / `.pdf`: la lámina para mostrar.
 
+## Elegida: idea 1 (Franja). Pliego para la gráfica
+- `ideas/01-franja/Agenda-MasCastillo-01-franja-pliego-vertical.pdf` (y el `.svg` editable). Tiene las dos tapas en una sola tirada vertical:
+  - la **tapa arriba** y la **contratapa abajo**, cada una de 297 × 210 mm con su sangrado de 3 mm;
+  - **doble corte al medio** y marcas de corte;
+  - rótulos "TAPA · FRENTE" y "CONTRATAPA · DORSO" en el margen, fuera del corte.
+- El pliego mide 319 × 448 mm y entra en un **SRA3 (320 × 450)**. En un A3 justo (297 × 420) no hay lugar para el sangrado ni las marcas.
+
 ## Ideas
 1. **Franja:** el armado de la tapa original, con una franja negra con "AGENDA 2027". La contratapa repite la franja del otro lado y lleva el texto centrado.
 2. **Logo protagonista:** naranja pleno, el logo gigante y una píldora negra con "AGENDA 2027". La contratapa es un texto grande con comillas.

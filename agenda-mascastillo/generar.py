@@ -291,6 +291,7 @@ def main():
         print("ok", slug)
     lamina()
     svg_unico()
+    pliego(1)   # la elegida por el cliente
 
 
 def lamina():
@@ -337,6 +338,54 @@ def svg_unico():
             '<g id="Guias-NO-IMPRIMIR" fill="none" stroke="#FF00FF" stroke-width="0.2">' + "".join(gu) + "</g>"]
     open(os.path.join(OUT, "Agenda-MasCastillo-3-ideas.svg"), "w").write(
         svg_doc(body, "Agenda MasCastillo 3 ideas", tw, th))
+
+
+# ================================================================ pliego para la gráfica
+# Las dos tapas en una sola tirada: tapa arriba, contratapa abajo, cada una
+# con su sangrado (doble corte en el medio), marcas de corte y rótulos fuera
+# del corte. 319 x 448 mm: entra en un pliego SRA3 (320 x 450).
+M_PL = 8.0  # margen para marcas y rótulos
+
+
+def pliego(idea):
+    n, slug, nombre, ft, fc = next(i for i in IDEAS if i[0] == idea)
+    pw, ph = FW + 2 * M_PL, 2 * FH + 2 * M_PL
+    body = [rect(BLANCO, 0, 0, pw, ph, "Pliego-fondo")]
+    for k, (cara, fn) in enumerate((("Tapa", ft), ("Contratapa", fc))):
+        oy = M_PL + k * FH
+        pre = f"{cara}"
+        b = re.sub(r'id="([^"]+)"', lambda mm: f'id="{pre}-{mm.group(1)}"', "\n".join(fn()))
+        body.append(f'<clipPath id="{pre}-clip"><rect width="{FW}" height="{FH}"/></clipPath>')
+        body.append(f'<g id="{pre}" transform="translate({M_PL} {oy:.3f})">'
+                    f'<g clip-path="url(#{pre}-clip)">{b}</g></g>')
+        # rótulo en el margen izquierdo, girado
+        cy = oy + FH / 2
+        rot = "TAPA · FRENTE" if k == 0 else "CONTRATAPA · DORSO"
+        body.append(f'<g transform="translate({M_PL / 2 + 1.2:.3f} {cy:.3f}) rotate(-90)">'
+                    + T(0, 0, rot, 3.0, NEGRO, weight=800, ls=0.8, anchor="middle") + "</g>")
+    # marcas de corte: bordes externos y doble corte del medio
+    x0, x1 = M_PL + B, M_PL + B + W
+    ys = [M_PL + B, M_PL + B + H, M_PL + FH + B, M_PL + FH + B + H]
+    L, off = 5.0, 0.6
+    marcas = []
+    for y in ys:
+        marcas.append(f"M{x0 - B - off - L:.2f} {y:.2f}H{x0 - B - off:.2f}")
+        marcas.append(f"M{x1 + B + off:.2f} {y:.2f}H{x1 + B + off + L:.2f}")
+    for x in (x0, x1):
+        marcas.append(f"M{x:.2f} {M_PL - off - L + 2:.2f}V{M_PL - off:.2f}")
+        marcas.append(f"M{x:.2f} {ph - M_PL + off:.2f}V{ph - M_PL + off + L - 2:.2f}")
+    body.append(f'<path id="Marcas-de-corte" fill="none" stroke="{NEGRO}" stroke-width="0.25" '
+                f'd="{"".join(marcas)}"/>')
+    body.append(T(pw / 2, M_PL - 3.2, f"AGENDA 2027 MASCASTILLO · {nombre.split(' — ')[0].upper()} · "
+                  f"2 TAPAS A4 APAISADO 297 × 210 MM · SANGRADO 3 MM · DOBLE CORTE AL MEDIO",
+                  2.2, NEGRO, weight=700, ls=0.3, anchor="middle"))
+    svg = svg_doc(body, f"Agenda MasCastillo pliego {slug}", pw, ph)
+    d = os.path.join(OUT, slug)
+    open(os.path.join(d, f"Agenda-MasCastillo-{slug}-pliego-vertical.svg"), "w").write(svg)
+    cairosvg.svg2pdf(bytestring=svg.encode(),
+                     write_to=os.path.join(d, f"Agenda-MasCastillo-{slug}-pliego-vertical.pdf"))
+    cairosvg.svg2png(bytestring=svg.encode(), output_width=int(pw * 5),
+                     write_to=os.path.join(d, f"preview-pliego-vertical.png"))
 
 
 if __name__ == "__main__":

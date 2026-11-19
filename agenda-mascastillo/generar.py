@@ -291,7 +291,8 @@ def main():
         print("ok", slug)
     lamina()
     svg_unico()
-    pliego(1)   # la elegida por el cliente
+    pliego(1)
+    franja_a5_salida()   # la elegida, en el formato real (2 × A5 en un A4)
 
 
 def lamina():
@@ -386,6 +387,106 @@ def pliego(idea):
                      write_to=os.path.join(d, f"Agenda-MasCastillo-{slug}-pliego-vertical.pdf"))
     cairosvg.svg2png(bytestring=svg.encode(), output_width=int(pw * 5),
                      write_to=os.path.join(d, f"preview-pliego-vertical.png"))
+
+
+# ================================================================ FRANJA A5 (la elegida, formato real)
+# La agenda es A5 vertical: la tapa es UN A4 apaisado que se pliega al medio.
+# Mitad izquierda = contratapa · mitad derecha = tapa (como la tapa original
+# y la agenda de muestra). Las franjas negras van en los bordes exteriores.
+PLIEGUE = FW / 2                    # x del pliegue (lomo), en coordenadas con sangrado
+FR5 = 30.0                          # ancho de cada franja (al corte)
+REGLA_RVR_A5 = ["Así que, todas las cosas", "que queráis que", "los hombres hagan",
+                "con vosotros, así también", "haced vosotros", "con ellos."]
+
+
+def franja_a5():
+    fx_t = FW - B - FR5             # inicio de la franja de la tapa
+    fx_c = B + FR5                  # fin de la franja de la contratapa
+    # tapa: logo centrado en la zona naranja
+    lw = 92.0
+    tcx = PLIEGUE + (fx_t - PLIEGUE) / 2
+    # contratapa: texto centrado en la zona naranja
+    ccx = fx_c + (PLIEGUE - fx_c) / 2
+    lh, ty = 9.4, B + 82
+    return [
+        '<g id="Fondo">', rect(NARANJA), textura(0, FW, 0.30),
+        rect(NEGRO, 0, 0, fx_c, FH, "Franja-contratapa"),
+        rect(NEGRO, fx_t, 0, FW - fx_t, FH, "Franja-tapa"), "</g>",
+        '<g id="TAPA-frente">',
+        g_logo(tcx - lw / 2, (FH - logo_h(lw)) / 2 - 8, lw, NEGRO, NEGRO, NEGRO, "Logo"),
+        T(fx_t + FR5 / 2, FH - B - 24, "AGENDA", 4.6, BLANCO, weight=400, ls=0.9, anchor="middle"),
+        T(fx_t + FR5 / 2, FH - B - 13, ANIO, 10.5, NARANJA, family="Nunito", weight=900,
+          anchor="middle", gid="Anio"),
+        "</g>",
+        '<g id="CONTRATAPA-dorso">',
+        T(ccx, ty - 20, "LA REGLA DE ORO", 3.6, NEGRO, weight=800, ls=1.2, anchor="middle",
+          gid="Titulo"),
+        parrafo(ccx, ty, REGLA_RVR_A5, 6.8, lh, NEGRO, anchor="middle"),
+        T(ccx, ty + 5 * lh + 13, CITA, 3.6, NEGRO, weight=700, ls=1.1, anchor="middle", gid="Cita"),
+        g_logo(B + (FR5 - 22) / 2, FH - B - 12 - logo_h(22), 22, NARANJA, BLANCO, NARANJA, "Logo-chico"),
+        "</g>"]
+
+
+def guias_a5():
+    return (f'<g id="Guias-NO-IMPRIMIR" fill="none" stroke="#FF00FF" stroke-width="0.2">'
+            f'<rect x="{B}" y="{B}" width="{W}" height="{H}"/>'
+            f'<path d="M{PLIEGUE} 0V{FH}" stroke-dasharray="2 1.5"/>'
+            f'<rect x="{B+8}" y="{B+8}" width="{W/2-16}" height="{H-16}" stroke-dasharray="1 1"/>'
+            f'<rect x="{PLIEGUE+8}" y="{B+8}" width="{W/2-16}" height="{H-16}" stroke-dasharray="1 1"/>'
+            + T(B + W / 4, B + 6, "CONTRATAPA (dorso)", 3, "#FF00FF", anchor="middle")
+            + T(PLIEGUE + W / 4, B + 6, "TAPA (frente)", 3, "#FF00FF", anchor="middle") + "</g>")
+
+
+def franja_a5_salida():
+    d = os.path.join(OUT, "01-franja-A5")
+    os.makedirs(d, exist_ok=True)
+    body = franja_a5()
+    # 1) archivo de impresión: A4 apaisado + sangrado, con TrimBox
+    limpio = svg_doc(body, "Agenda MasCastillo Franja A5")
+    open(os.path.join(d, "tapa-y-contratapa.svg"), "w").write(
+        svg_doc(body + [guias_a5()], "Agenda MasCastillo Franja A5"))
+    tmp = "/tmp/_agenda_franja_a5.pdf"
+    cairosvg.svg2pdf(bytestring=limpio.encode(), write_to=tmp)
+    w = PdfWriter()
+    pg = PdfReader(tmp).pages[0]
+    mm = 72 / 25.4
+    pw, ph = float(pg.mediabox.width), float(pg.mediabox.height)
+    pg.bleedbox = RectangleObject([0, 0, pw, ph])
+    pg.trimbox = RectangleObject([B * mm, B * mm, pw - B * mm, ph - B * mm])
+    w.add_page(pg)
+    w.add_metadata({"/Title": "Agenda 2027 MasCastillo — Franja (A5, tapa + contratapa)"})
+    w.write(os.path.join(d, "Agenda-MasCastillo-Franja-A5-imprimir.pdf"))
+    img = Image.open(io.BytesIO(cairosvg.svg2png(bytestring=limpio.encode(), output_width=int(FW * 6))))
+    k = img.width / FW
+    img.crop((int(B * k), int(B * k), int((B + W) * k), int((B + H) * k))).save(
+        os.path.join(d, "preview.png"))
+    # 2) con marcas de corte, pliegue y rótulos fuera del corte
+    m = 12.0
+    sw, sh = FW + 2 * m, FH + 2 * m
+    marcas, L, off = [], 5.0, 0.8
+    x0, x1, y0, y1 = m + B, m + B + W, m + B, m + B + H
+    for x in (x0, x1):
+        marcas += [f"M{x:.2f} {m - off - L:.2f}V{m - off:.2f}", f"M{x:.2f} {sh - m + off:.2f}V{sh - m + off + L:.2f}"]
+    for y in (y0, y1):
+        marcas += [f"M{m - off - L:.2f} {y:.2f}H{m - off:.2f}", f"M{sw - m + off:.2f} {y:.2f}H{sw - m + off + L:.2f}"]
+    px = m + PLIEGUE
+    full = [rect(BLANCO, 0, 0, sw, sh, "Pliego-fondo"),
+            f'<clipPath id="Diseno-clip"><rect width="{FW}" height="{FH}"/></clipPath>',
+            f'<g id="Diseno" transform="translate({m} {m})"><g clip-path="url(#Diseno-clip)">'
+            + "\n".join(body) + "</g></g>",
+            f'<path id="Marcas-de-corte" fill="none" stroke="{NEGRO}" stroke-width="0.25" d="{"".join(marcas)}"/>',
+            f'<path id="Marca-de-pliegue" fill="none" stroke="{NEGRO}" stroke-width="0.25" '
+            f'stroke-dasharray="1.2 1" d="M{px} {m - off - L}V{m - off}M{px} {sh - m + off}V{sh - m + off + L}"/>',
+            T(m + B + W / 4, m - 4.2, "CONTRATAPA (DORSO)", 2.8, NEGRO, weight=800, ls=0.6, anchor="middle"),
+            T(m + PLIEGUE + W / 4, m - 4.2, "TAPA (FRENTE)", 2.8, NEGRO, weight=800, ls=0.6, anchor="middle"),
+            T(px + 2, sh - m + 4.6, "PLIEGUE · LOMO", 2.2, NEGRO, weight=700, ls=0.5),
+            T(m + B, sh - 2.6, "AGENDA 2027 MASCASTILLO · A4 APAISADO 297 × 210 MM = 2 × A5 VERTICAL · SANGRADO 3 MM",
+              2.0, NEGRO, weight=700, ls=0.3)]
+    svgm = svg_doc(full, "Agenda MasCastillo Franja A5 con marcas", sw, sh)
+    cairosvg.svg2pdf(bytestring=svgm.encode(),
+                     write_to=os.path.join(d, "Agenda-MasCastillo-Franja-A5-con-marcas.pdf"))
+    cairosvg.svg2png(bytestring=svgm.encode(), output_width=int(sw * 5),
+                     write_to=os.path.join(d, "preview-con-marcas.png"))
 
 
 if __name__ == "__main__":

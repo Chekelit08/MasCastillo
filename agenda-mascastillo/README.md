@@ -15,12 +15,14 @@ Formato **A4 apaisado (297 × 210 mm)** con 3 mm de sangrado, el mismo que el in
 - `ideas/NN-…/tapa.svg` y `contratapa.svg`: para editar en Illustrator. La capa `Guias-NO-IMPRIMIR` marca el corte y el margen.
 - `ideas/Agenda-MasCastillo-ideas.png` / `.pdf`: la lámina para mostrar.
 
-## Elegida: idea 1 (Franja). Pliego para la gráfica
-- `ideas/01-franja/Agenda-MasCastillo-01-franja-pliego-vertical.pdf` (y el `.svg` editable). Tiene las dos tapas en una sola tirada vertical:
-  - la **tapa arriba** y la **contratapa abajo**, cada una de 297 × 210 mm con su sangrado de 3 mm;
-  - **doble corte al medio** y marcas de corte;
-  - rótulos "TAPA · FRENTE" y "CONTRATAPA · DORSO" en el margen, fuera del corte.
-- El pliego mide 319 × 448 mm y entra en un **SRA3 (320 × 450)**. En un A3 justo (297 × 420) no hay lugar para el sangrado ni las marcas.
+## Elegida: idea 1 (Franja), en el formato real
+La agenda es **A5 vertical**. La tapa es **un A4 apaisado que se pliega al medio**: la mitad izquierda es la contratapa y la derecha la tapa.
+
+- `ideas/01-franja-A5/Agenda-MasCastillo-Franja-A5-imprimir.pdf`: **archivo para la gráfica**. Es A4 apaisado con 3 mm de sangrado y TrimBox.
+- `ideas/01-franja-A5/Agenda-MasCastillo-Franja-A5-con-marcas.pdf`: el mismo, con marcas de corte, la marca del pliegue y los rótulos CONTRATAPA / TAPA fuera del corte.
+- `ideas/01-franja-A5/tapa-y-contratapa.svg`: para editar en Illustrator. La capa `Guias-NO-IMPRIMIR` marca el corte, el pliegue y los márgenes.
+- Las franjas negras van en los bordes exteriores y el castillo de fondo sigue de una mitad a la otra.
+- Reemplaza a `01-franja/…pliego-vertical`, que se armó cuando todavía se pensaba en dos A4 apaisados.
 
 ## Ideas
 1. **Franja:** el armado de la tapa original, con una franja negra con "AGENDA 2027". La contratapa repite la franja del otro lado y lleva el texto centrado.
